@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration Bee - Gym</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+    <link rel="stylesheet" type="text/css" href="/gym.css">
+  </head>
+  <body>
+    <h1>Integration Bee Gym</h1>
+    <div id="problem-grid">
+      <% for (const problem of problems) { %>
+        <div class="problem">
+          <p class="latex">\(<%= problem.latex %> d<%= problem.variable %>\)</p>
+        <div class="problem-info">
+          <p class="rating"><b>Rating:</b> <%= problem.rating %></p>
+          <div class="tags"><b>Tags: &ThinSpace;</b>
+          <% for (const tag of problem.tags) { %>
+          <div class="tag"><%= tag %></div>
+          <% } %>
+        </div></div>
+        </div>
+      <% } %>
+    </div>
+  </body>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"/>
+  <script>
+     MathJax = {
+          tex: {
+              inlineMath: [['$', '$']],
+     displayMath: [["\\(", "\\)"]]
+          },
+          svg: {
+              fontCache: 'global'
+          }
+      };
+  </script>
+</html>
