@@ -10,34 +10,26 @@
 .problem {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   border-radius: 1em;
   border: 2px solid black;
   padding: 1em;
-  height: 10em;
+}
+
+.latex-container {
+  display: flex;
+  align-items: center;
+  height: 6em;
+  text-decoration: none;
+  color: inherit;
 }
 
 .latex {
-  font-size: 1.2em;
-  align-content: center;
+  transition: font-size;
 }
-
 .problem-info {
-  align-self: flex-end;
+  align-self: flex-start;
   display: flex;
   width: 100%;
   flex-direction: column;
-}
-
-.tags {
-  display: flex;
-  flex-direction: row;
-}
-
-.tag {
-  border-radius: 0.25em;
-  border: 0.5px solid black;
-  padding: 0px 0.5em;
-  background-color: lightgray;
 }

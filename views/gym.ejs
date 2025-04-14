@@ -11,7 +11,9 @@
     <div id="problem-grid">
       <% for (const problem of problems) { %>
         <div class="problem">
-          <p class="latex">\(<%= problem.latex %> d<%= problem.variable %>\)</p>
+          <a class="latex-container" href="/gym/problem/<%= problem.id %>">
+            <p class="latex">$$<%= problem.latex %> d<%= problem.variable %>$$</p>
+          </a>
         <div class="problem-info">
           <p class="rating"><b>Rating:</b> <%= problem.rating %></p>
           <div class="tags"><b>Tags: &ThinSpace;</b>
@@ -28,7 +30,7 @@
      MathJax = {
           tex: {
               inlineMath: [['$', '$']],
-     displayMath: [["\\(", "\\)"]]
+     displayMath: [["$$", "$$"]]
           },
           svg: {
               fontCache: 'global'
@@ -36,3 +38,4 @@
       };
   </script>
 </html>
+

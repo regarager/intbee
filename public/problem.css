@@ -1,0 +1,27 @@
+body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.problem {
+  display: flex;
+  border: 2px solid black;
+  border-radius: 1em;
+  width: 18em;
+  height: 10em;
+  font-size: 1.5em;
+  justify-content: center;
+  align-items: center;
+}
+
+.problem-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: 1em;
+  font-size: 1.2em;
+}

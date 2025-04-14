@@ -10,14 +10,28 @@ function parsePage(page: string) {
   return parseInt(page) || -1;
 }
 
+gymRouter.get("/", async (_, res) => {
+  res.redirect("/gym/1");
+});
+
 gymRouter.get("/:page", async (req, res) => {
-  const page = parsePage(req.params.page);
+  const page = Math.min(parsePage(req.params.page), 1);
 
   const problems = await Problem.find()
     .skip((page - 1) * 50)
-    .limit(5);
-
-  log(problems);
+    .limit(50);
 
   res.render(process.cwd() + "/views/gym.ejs", { problems });
+});
+
+gymRouter.get("/problem/:id", async (req, res) => {
+  const id = req.params.id ?? "";
+
+  const problem = await Problem.findById(id);
+
+  if (problem == null) {
+    res.redirect("/error");
+  } else {
+    res.render(process.cwd() + "/views/problem.ejs", { problem });
+  }
 });

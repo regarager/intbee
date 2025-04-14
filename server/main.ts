@@ -7,6 +7,7 @@ import { log } from "./util";
 import path from "path";
 import { authRouter } from "./routes/auth";
 import { gymRouter } from "./routes/gym";
+
 dotenv.config();
 
 log(process.env.MONGO_URL);
@@ -27,6 +28,10 @@ app.use(express.static("public"));
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
+app.get("/error", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "404.html"));
+});
 
 wss.on("connection", () => {
   log("client connected to websocket server");
