@@ -16,10 +16,11 @@ gymRouter.get("/", async (_, res) => {
 
 gymRouter.get("/:page", async (req, res) => {
   const page = Math.min(parsePage(req.params.page), 1);
+  const size = 40;
 
   const problems = await Problem.find()
-    .skip((page - 1) * 50)
-    .limit(50);
+    .skip((page - 1) * size)
+    .limit(size);
 
   res.render(file("/pages/gym.ejs"), { problems });
 });

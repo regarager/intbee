@@ -7,6 +7,8 @@ import { file, log } from "./util";
 import path from "path";
 import { authRouter } from "./routes/auth";
 import { gymRouter } from "./routes/gym";
+import { authAPIRouter } from "./routes/api/auth";
+import { apiRouter } from "./routes/api";
 
 dotenv.config();
 
@@ -20,7 +22,10 @@ const wss = new ws.WebSocketServer({ server, path: "/api/ws/" });
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use("/api/auth", authRouter);
+app.use("/api/auth", authAPIRouter);
+app.use("/api", apiRouter);
+
+app.use("/auth", authRouter);
 app.use("/gym", gymRouter);
 
 app.use(express.static("dist"));
