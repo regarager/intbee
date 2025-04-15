@@ -18,15 +18,16 @@
 
 .latex-container {
   display: flex;
-  align-items: center;
   height: 6em;
   text-decoration: none;
   color: inherit;
 }
 
 .latex {
+  align-self: flex-end;
   transition: font-size;
 }
+
 .problem-info {
   align-self: flex-start;
   display: flex;

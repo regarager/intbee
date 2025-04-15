@@ -3,17 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <title>Integration Bee - Gym</title>
-    <link rel="stylesheet" type="text/css" href="/styles.css">
+    <%- include("../components/styles") %>
     <link rel="stylesheet" type="text/css" href="/problem.css">
   </head>
   <body>
     <h1>Problem View</h1>
     <div class="container">
       <div class="problem">
-        $$<%= problem.latex %>$$
+        $$<%= problem.latex %>d<%= problem.variable %>$$
       </div>
       <div class="problem-info">
-        <p class="rating"><b>Rating:</b> <%= problem.rating %></p>
+        <p class="rating"><b>Rating:</b> <span class="c-<%= getRank(problem.rating) %>"><%= problem.rating %></span></p>
         <div class="tags"><b>Tags: &ThinSpace;</b>
         <% for (const tag of problem.tags) { %>
         <div class="tag"><%= tag %></div>

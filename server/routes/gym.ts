@@ -1,5 +1,5 @@
 import express from "express";
-import { log, Problem } from "../util";
+import { file, Problem } from "../util";
 
 export const gymRouter = express.Router();
 
@@ -21,7 +21,7 @@ gymRouter.get("/:page", async (req, res) => {
     .skip((page - 1) * 50)
     .limit(50);
 
-  res.render(process.cwd() + "/views/gym.ejs", { problems });
+  res.render(file("/pages/gym.ejs"), { problems });
 });
 
 gymRouter.get("/problem/:id", async (req, res) => {
@@ -32,6 +32,6 @@ gymRouter.get("/problem/:id", async (req, res) => {
   if (problem == null) {
     res.redirect("/error");
   } else {
-    res.render(process.cwd() + "/views/problem.ejs", { problem });
+    res.render(file("/pages/problem.ejs"), { problem });
   }
 });

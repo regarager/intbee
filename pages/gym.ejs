@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>Integration Bee - Gym</title>
-    <link rel="stylesheet" type="text/css" href="/styles.css">
+    <%- include("../components/styles") %>
     <link rel="stylesheet" type="text/css" href="/gym.css">
   </head>
   <body>
@@ -15,7 +15,10 @@
             <p class="latex">$$<%= problem.latex %> d<%= problem.variable %>$$</p>
           </a>
         <div class="problem-info">
-          <p class="rating"><b>Rating:</b> <%= problem.rating %></p>
+          <p class="rating">
+            <b>Rating:</b>
+            <%- include("../components/rating.ejs", { rating: problem.rating }) %>
+          </p>
           <div class="tags"><b>Tags: &ThinSpace;</b>
           <% for (const tag of problem.tags) { %>
           <div class="tag"><%= tag %></div>

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import path from "path";
 
 function formatDate(date: Date): string {
   const hours = String(date.getHours()).padStart(2, "0");
@@ -24,6 +25,7 @@ export const User = mongoose.model(
       default: ["user"],
     },
     rating: Number,
+    solved: [String],
   }),
 );
 
@@ -37,3 +39,7 @@ export const Problem = mongoose.model(
     tags: [String],
   }),
 );
+
+export function file(...fragments: string[]) {
+  return path.join(process.cwd(), ...fragments);
+}
