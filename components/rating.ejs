@@ -1,5 +1,6 @@
 <% if (getRank(rating) === "orz") { %>
-  <span class="c-orz-first-letter"><%= rating.toString()[0] %></span><span class="c-orz"><%= rating.toString().slice(1) %></span>
+<span class="c-orz-first-letter"><%= rating.toString()[0] %></span
+><span class="c-orz"><%= rating.toString().slice(1) %></span>
 <% } else { %>
-  <span class="c-<%= getRank(rating) %>"><%= rating %></span>
+<span class="c-<%= getRank(rating) %>"><%= rating %></span>
 <% } %>

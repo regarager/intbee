@@ -1,0 +1,48 @@
+.container {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+
+  border: 2px solid black;
+  border-radius: 1em;
+  padding: 2em;
+  width: 20em;
+}
+
+#login-form label {
+  font-size: 1.25em;
+  font-weight: bold;
+}
+
+#login-form .title {
+  font-size: 1.5em;
+  font-weight: bold;
+  align-self: center;
+}
+
+#login-form input {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  border: 2px solid gray;
+}
+
+#form-footer {
+  margin-top: 1em;
+  margin-left: auto;
+}
+
+#submit-btn {
+  background-color: #7575cb;
+  color: white;
+  border: none;
+  border-radius: 0.5em;
+  padding: 0.5em;
+}
