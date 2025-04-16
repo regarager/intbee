@@ -6,7 +6,7 @@
   "scripts": {
     "format": "prettier --write .",
     "dev": "npm-run-all --parallel watch:server watch:client",
-    "watch:server": "nodemon --watch",
+    "watch:server": "nodemon --watch server",
     "watch:client": "webpack --watch",
     "build": "webpack && tsc",
     "start": "ts-node server/main.ts"

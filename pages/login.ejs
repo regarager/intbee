@@ -9,15 +9,17 @@
   </head>
   <%- include("../components/header.ejs") %>
   <div class="container">
-    <form action="/api/auth/login" method="POST" id="login-form">
+    <form id="login-form">
       <span class="title">Login</span>
+      <span id="result" hidden></span>
       <label for="username">Username</label>
       <input type="text" name="username" />
       <label for="password">Password</label>
       <input type="password" name="password" />
       <span id="form-footer">
-        <button type="submit" id="submit-btn">Submit</button>
+        <button id="submit-btn">Submit</button>
       </span>
     </form>
   </div>
+  <script src="/login-bundle.js"></script>
 </html>

@@ -22,7 +22,21 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 };
 
 authAPIRouter.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  console.log(req.query);
+  console.log(req.body);
+  console.log(req.params);
+  if (!req.body) {
+    res.status(400).send({ message: "Authentication failure" });
+    return;
+  }
+
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if (!username || !password) {
+    res.status(400).send({ message: "Authentication failure" });
+    return;
+  }
 
   const user = await User.findOne({ username }).exec();
 
@@ -37,7 +51,19 @@ authAPIRouter.post("/login", async (req, res) => {
 });
 
 authAPIRouter.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  if (!req.body) {
+    res.status(400).send({ message: "Authentication failure" });
+    return;
+  }
+
+  const username = req.body.username;
+  const password = req.body.password;
+  const email = req.body.email;
+
+  if (!username || !password || !email) {
+    res.status(400).send({ message: "Authentication failure" });
+    return;
+  }
 
   if (await User.exists({ username })) {
     res.status(409).send({ error: `Account with username ${username} already exists` });

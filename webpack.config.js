@@ -4,7 +4,7 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    // TODO: set entries
+    login: "./client/login.ts",
   },
   output: {
     path: path.resolve(__dirname, "./dist"),

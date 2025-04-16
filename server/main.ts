@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import http from "http";
 import ws from "ws";
 import mongoose from "mongoose";
@@ -19,18 +19,6 @@ const app = express();
 const server = http.createServer(app);
 const wss = new ws.WebSocketServer({ server, path: "/api/ws/" });
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-app.use("/api/auth", authAPIRouter);
-app.use("/api", apiRouter);
-
-app.use("/auth", authRouter);
-app.use("/gym", gymRouter);
-
-app.use(express.static("dist"));
-app.use(express.static("public"));
-
 app.set("views", path.join(__dirname, "pages"));
 app.set("view engine", "ejs");
 
@@ -39,8 +27,20 @@ app.locals.getRank = (r: number) =>
     Math.min(Math.max(Math.floor((r - 1) / 500), 0), 8)
   ];
 
-app.get("/error", (req, res) => {
-  res.sendFile(file("pages/404.html"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(express.static("dist"));
+app.use(express.static("public"));
+
+app.use("/api/auth", authAPIRouter);
+app.use("/api", apiRouter);
+
+app.use("/auth", authRouter);
+app.use("/gym", gymRouter);
+
+app.use((_: Request, res: Response) => {
+  res.render(file("pages/404.ejs"));
 });
 
 wss.on("connection", () => {
