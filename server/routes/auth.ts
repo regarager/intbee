@@ -1,6 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import argon2 from "argon2";
-import { file, User } from "../util";
+import { file } from "../util";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
@@ -26,11 +25,11 @@ authRouter.get("/login", (req, res) => {
 
   if (token) {
     jwt.verify(token, JWT_SECRET, err => {
-      if (err) res.sendFile(file("/pages/login.html"));
+      if (err) res.render(file("/pages/login.ejs"));
       else res.redirect("/gym");
     });
   }
-  res.sendFile(file("/pages/login.html"));
+  res.render(file("/pages/login.ejs"));
 });
 
 authRouter.get("/register", (req, res) => {

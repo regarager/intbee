@@ -20,7 +20,8 @@ gymRouter.get("/:page", async (req, res) => {
 
   const problems = await Problem.find()
     .skip((page - 1) * size)
-    .limit(size);
+    .limit(size)
+    .sort({ rating: -1, _id: 1 });
 
   res.render(file("/pages/gym.ejs"), { problems });
 });

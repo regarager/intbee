@@ -4,9 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
-    <link href="css/style.css" rel="stylesheet" />
+    <%- include("../components/styles") %>
   </head>
-  <body>
+  <%- include("../components/header.ejs") %>
+  <div class="container">
     <form action="/api/auth/login" method="POST">
       <label for="username">Username</label>
       <input type="text" name="username" />
@@ -14,5 +15,5 @@
       <input type="password" name="password" />
       <button type="submit">Submit</button>
     </form>
-  </body>
+  </div>
 </html>

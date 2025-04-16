@@ -6,22 +6,20 @@
     <%- include("../components/styles") %>
     <link rel="stylesheet" type="text/css" href="/problem.css">
   </head>
-  <body>
+  <%- include("../components/header.ejs") %>
+  <div class="container">
     <h1>Problem View</h1>
-    <div class="container">
-      <div class="problem">
-        $$<%= problem.latex %>d<%= problem.variable %>$$
-      </div>
-      <div class="problem-info">
-        <p class="rating"><b>Rating:</b> <span class="c-<%= getRank(problem.rating) %>"><%= problem.rating %></span></p>
-        <div class="tags"><b>Tags: &ThinSpace;</b>
-        <% for (const tag of problem.tags) { %>
-        <div class="tag"><%= tag %></div>
-        <% } %>
-      </div>
+    <div class="problem">
+      $$<%= problem.latex %>d<%= problem.variable %>$$
     </div>
-
-  </body>
+    <div class="problem-info">
+      <p class="rating"><b>Rating:</b> <span class="c-<%= getRank(problem.rating) %>"><%= problem.rating %></span></p>
+      <div class="tags"><b>Tags: &ThinSpace;</b>
+      <% for (const tag of problem.tags) { %>
+      <div class="tag"><%= tag %></div>
+      <% } %>
+    </div>
+  </div>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"/>
   <script>
      MathJax = {
