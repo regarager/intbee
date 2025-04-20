@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import argon2 from "argon2";
-import { file, User } from "../../util";
+import { log, User } from "../../util";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
@@ -9,22 +9,21 @@ dotenv.config();
 const JWT_SECRET: string = process.env.JWT_SECRET;
 
 export const authAPIRouter = express.Router();
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization ?? "";
-  const token = authHeader.split(" ")[1] ?? "";
 
-  if (token) {
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) return res.status(403);
-      else next();
-    });
-  }
+export const authOnly = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.cookies.token ?? "";
+  jwt.verify(token, JWT_SECRET, (_, user) => {
+    if (!user) {
+      log(`Unauthenticated request to ${req.url}`);
+      res.redirect("/auth/login");
+    } else {
+      log(`User ${user.username} accessed ${req.url}`);
+      next();
+    }
+  });
 };
 
 authAPIRouter.post("/login", async (req, res) => {
-  console.log(req.query);
-  console.log(req.body);
-  console.log(req.params);
   if (!req.body) {
     res.status(400).send({ message: "Authentication failure" });
     return;
@@ -44,7 +43,10 @@ authAPIRouter.post("/login", async (req, res) => {
     res.status(407).send({ message: `User ${username} does not exist` });
   } else if (await argon2.verify(user.password, password)) {
     const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "24h" });
-    res.status(200).send({ message: "Successfully authenticated!", token });
+    res
+      .status(200)
+      .cookie("token", token, { maxAge: 86400 * 1000 })
+      .send({ message: "Successfully authenticated!", token });
   } else {
     res.status(407).send({ message: "Authentication failure" });
   }
@@ -79,5 +81,8 @@ authAPIRouter.post("/register", async (req, res) => {
   await user.save();
 
   const token = jwt.sign(username, JWT_SECRET, { expiresIn: "24h" });
-  res.status(200).send({ message: "Successfully registered!", token });
+  res
+    .status(200)
+    .cookie("token", token, { maxAge: 86400 * 1000 })
+    .send({ message: "Successfully registered!", token });
 });
