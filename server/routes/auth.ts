@@ -2,10 +2,9 @@ import express from "express";
 import { file } from "../util";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { verify } from "./api/auth";
 
 dotenv.config();
-
-const JWT_SECRET: string = process.env.JWT_SECRET;
 
 export const authRouter = express.Router();
 
@@ -14,7 +13,7 @@ authRouter.get("/login", (req, res) => {
   const token = authHeader.split(" ")[1] ?? "";
 
   if (token) {
-    jwt.verify(token, JWT_SECRET, err => {
+    verify(token, err => {
       if (err) res.render(file("/pages/login.ejs"));
       else res.redirect("/gym");
     });
@@ -27,7 +26,7 @@ authRouter.get("/register", (req, res) => {
   const token = authHeader.split(" ")[1] ?? "";
 
   if (token) {
-    jwt.verify(token, JWT_SECRET, err => {
+    verify(token, err => {
       if (err) res.sendFile(file("/pages/register.html"));
       else res.redirect("/gym");
     });

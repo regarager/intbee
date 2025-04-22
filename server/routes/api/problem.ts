@@ -1,9 +1,9 @@
 import express from "express";
-import { file, Problem } from "../util";
+import { file, Problem } from "../../util";
 
-export const apiRouter = express.Router();
+export const problemRouter = express.Router();
 
-apiRouter.post("/problem/:id/verify", async (req, res) => {
+problemRouter.post("/:id/verify", async (req, res) => {
   const id = req.params.id ?? "";
 
   const problem = await Problem.findById(id);

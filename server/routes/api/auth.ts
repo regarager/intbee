@@ -2,18 +2,33 @@ import express, { NextFunction, Request, Response } from "express";
 import argon2 from "argon2";
 import { log, User } from "../../util";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
 
 dotenv.config();
 
 const JWT_SECRET: string = process.env.JWT_SECRET;
 
+export interface UserPayload {
+  username: string;
+  iat: number;
+  exp: number;
+}
+
 export const authAPIRouter = express.Router();
+export const verify = (
+  token: string,
+  callback: (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => void,
+) => {
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    callback(err, decoded);
+  });
+};
 
 export const authOnly = (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token ?? "";
-  jwt.verify(token, JWT_SECRET, (_, user) => {
-    if (!user) {
+
+  verify(token, (err, user: UserPayload | undefined) => {
+    if (err) {
       log(`Unauthenticated request to ${req.url}`);
       res.redirect("/auth/login");
     } else {

@@ -5,6 +5,7 @@ module.exports = {
   devtool: "inline-source-map",
   entry: {
     login: "./client/login.ts",
+    queue: "./client/queue.ts",
   },
   output: {
     path: path.resolve(__dirname, "./dist"),

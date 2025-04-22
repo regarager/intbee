@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration Bee - Gym</title>
+    <%- include("../components/styles") %>
+    <link rel="stylesheet" type="text/css" href="/queue.css" />
+  </head>
+  <%- include("../components/header.ejs") %>
+  <div class="container">
+    <h1>Queue</h1>
+    <button id="queue-btn" class="active">Queue</button>
+    <ol id="queue"></ol>
+  </div>
+  <script
+    id="MathJax-script"
+    async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  />
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [["$", "$"]],
+        displayMath: [["$$", "$$"]],
+      },
+      svg: {
+        fontCache: "global",
+      },
+    };
+  </script>
+  <script src="/queue-bundle.js"></script>
+</html>
