@@ -11,4 +11,6 @@ rankedRouter.get("/", authOnly, (req, res) => {
   res.render(file("pages/queue.ejs"));
 });
 
-rankedRouter.get("/room/:id", authOnly, (req, res) => {});
+rankedRouter.get("/room/:id", authOnly, (req, res) => {
+  res.render(file("pages/room.ejs"));
+});

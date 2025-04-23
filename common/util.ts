@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import path from "path";
 
 function formatDate(date: Date): string {
@@ -28,4 +29,8 @@ export function getRank(r: number) {
 
 export function file(...fragments: string[]) {
   return path.join(process.cwd(), ...fragments);
+}
+
+export function uid(size = 16) {
+  return randomBytes(size).toString("hex");
 }

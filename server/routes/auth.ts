@@ -1,7 +1,6 @@
 import express from "express";
 import { file } from "@common/util";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
 import { verify } from "./api/auth";
 
 dotenv.config();

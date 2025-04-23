@@ -1,11 +1,10 @@
 import express from "express";
-import { log } from "@common/util";
+import { log, uid } from "@common/util";
 import { make_pair, Pair, Queue } from "@common/structs";
 import { User } from "@server/schemas";
 import expressWs from "express-ws";
 import dotenv from "dotenv";
 import { authOnly, UserPayload, verify } from "./auth";
-import { randomBytes } from "crypto";
 
 dotenv.config();
 
@@ -20,7 +19,6 @@ export const wsRouter = express.Router();
 
 const queue = new Queue<Pair<string, number>>();
 const userMap = new Map<string, UserState>(); // uuid to username
-const ID_SIZE = 16;
 
 const msg = (message: string) => {
   return { message };
@@ -48,10 +46,10 @@ wsRouter.ws("/", (ws, req) => {
 
     const user = payload as UserPayload;
 
-    let id = randomBytes(ID_SIZE).toString("hex");
+    let id = uid();
 
     while (userMap.has(id)) {
-      id = randomBytes(ID_SIZE).toString("hex");
+      id = uid();
     }
 
     log(`Websocket: assigning id ${id} to ${user.username}`);

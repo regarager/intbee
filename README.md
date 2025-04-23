@@ -11,6 +11,7 @@ The project consists of three main folders: `client`, `public`, and `server`.
 ## Environment Variables
 
 The project has the following environment variables (may be set in `.env`):
+
 - `PORT` (optional): the port that the server runs on, defaults to 3000
 - `MONGO_URL`: the url of the MongoDB instance
 - `JWT_SECRET`: a hex string that is used for JWT signing (recommended 64 bytes)
