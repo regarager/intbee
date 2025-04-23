@@ -1,12 +1,13 @@
 import express, { NextFunction, Request, Response } from "express";
 import argon2 from "argon2";
-import { log, User } from "../../util";
+import { log } from "@common/util";
+import { User } from "@server/schemas";
 import dotenv from "dotenv";
 import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
 
 dotenv.config();
 
-const JWT_SECRET: string = process.env.JWT_SECRET;
+const JWT_SECRET: string = process.env.JWT_SECRET ?? "";
 
 export interface UserPayload {
   username: string;
@@ -27,12 +28,12 @@ export const verify = (
 export const authOnly = (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token ?? "";
 
-  verify(token, (err, user: UserPayload | undefined) => {
+  verify(token, (err, user: string | JwtPayload | undefined) => {
     if (err) {
       log(`Unauthenticated request to ${req.url}`);
       res.redirect("/auth/login");
     } else {
-      log(`User ${user.username} accessed ${req.url}`);
+      log(`User ${(user as UserPayload).username} accessed ${req.url}`);
       next();
     }
   });
@@ -56,7 +57,7 @@ authAPIRouter.post("/login", async (req, res) => {
 
   if (user === null) {
     res.status(407).send({ message: `User ${username} does not exist` });
-  } else if (await argon2.verify(user.password, password)) {
+  } else if (await argon2.verify(user.password!, password)) {
     const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "24h" });
     res
       .status(200)

@@ -1,5 +1,5 @@
 import express from "express";
-import { file, Problem } from "../../util";
+import { Problem } from "@server/schemas";
 
 export const problemRouter = express.Router();
 
@@ -12,7 +12,7 @@ problemRouter.post("/:id/verify", async (req, res) => {
     res.status(404);
   } else {
     const latex: string = (req.body.latex ?? "").replace(/ /g, "");
-    const solution = problem.answer.replace(/ /g, "");
+    const solution = problem.answer!.replace(/ /g, "");
 
     res.send({ result: latex === solution });
   }

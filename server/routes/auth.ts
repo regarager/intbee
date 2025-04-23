@@ -1,5 +1,5 @@
 import express from "express";
-import { file } from "../util";
+import { file } from "@common/util";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { verify } from "./api/auth";

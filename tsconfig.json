@@ -1,11 +1,20 @@
 {
   "compilerOptions": {
+    "target": "es2018",
     "module": "commonjs",
     "lib": ["es5", "es6", "dom", "dom.iterable", "es2018"],
+    "baseUrl": ".",
     "rootDir": ".",
-    "outDir": "dist",
+    "outDir": "./dist",
     "downlevelIteration": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "paths": {
+      "@server/*": ["./server/*"],
+      "@common/*": ["./common/*"]
+    }
   },
-  "include": ["server"]
+  "include": ["./server/**/*", "./common/**/*"],
+  "exclude": ["node_modules"]
 }

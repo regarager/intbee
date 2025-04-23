@@ -1,5 +1,7 @@
 import express from "express";
-import { log, make_pair, Pair, Queue, User } from "../../util";
+import { log } from "@common/util";
+import { make_pair, Pair, Queue } from "@common/structs";
+import { User } from "@server/schemas";
 import expressWs from "express-ws";
 import dotenv from "dotenv";
 import { authOnly, UserPayload, verify } from "./auth";
@@ -35,7 +37,7 @@ wsRouter.ws("/", (ws, req) => {
 
   log("Websocket connected");
 
-  verify(token, (err, user: UserPayload) => {
+  verify(token, (err, payload) => {
     if (err !== null) {
       log("Failed to authenticate websocket connection");
       ws.send(JSON.stringify(msg("Authentication failed")));
@@ -43,6 +45,8 @@ wsRouter.ws("/", (ws, req) => {
 
       return;
     }
+
+    const user = payload as UserPayload;
 
     let id = randomBytes(ID_SIZE).toString("hex");
 
@@ -69,8 +73,12 @@ wsRouter.ws("/", (ws, req) => {
 
       if (action === "queue") {
         if (user && !userMap.get(username)?.queued) {
-          userMap.set(username, { ...userMap.get(username), queued: true });
-          queue.enqueue(make_pair(username, user.rating));
+          const state: UserState = {
+            ...(userMap.get(username) ?? { username, queued: false }),
+            queued: true,
+          };
+          userMap.set(username, state);
+          queue.enqueue(make_pair(username, user.rating!));
         }
       }
     } catch {}

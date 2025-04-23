@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { file, getRank, log } from "./util";
+import { file, getRank, log } from "@common/util";
 import path from "path";
 import { authRouter } from "./routes/auth";
 import { gymRouter } from "./routes/gym";
@@ -11,11 +11,21 @@ import cookieParser from "cookie-parser";
 import { rankedRouter } from "./routes/ranked";
 import expressWs from "express-ws";
 import { wsRouter } from "./routes/api/ws";
+import { exit } from "process";
 
 dotenv.config();
 
-log(process.env.MONGO_URL);
-mongoose.connect(process.env.MONGO_URL).then(() => log("connected to mongoose"));
+if (process.env.MONGO_URL) {
+  mongoose.connect(process.env.MONGO_URL).then(() => log("connected to mongoose"));
+} else {
+  console.error("MONGO_URL environment variable not set");
+  exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  console.error("JWT_SECRET environment variable not set");
+  exit(1);
+}
 
 const appWS = expressWs(express());
 const app = appWS.app;
