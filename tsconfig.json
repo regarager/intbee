@@ -15,6 +15,6 @@
       "@common/*": ["./common/*"]
     }
   },
-  "include": ["./server/**/*", "./common/**/*"],
+  "include": ["./server/**/*", "./common/**/*", "./client/**/*"],
   "exclude": ["node_modules"]
 }

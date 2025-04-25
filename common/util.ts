@@ -24,7 +24,7 @@ export function getRank(r: number) {
     "wizard",
     "demon",
     "orz",
-  ][Math.min(Math.max(Math.floor((r - 1) / 500), 0), 8)];
+  ][clamp(Math.floor((r - 1) / 500), 0, 8)];
 }
 
 export function file(...fragments: string[]) {
@@ -33,4 +33,8 @@ export function file(...fragments: string[]) {
 
 export function uid(size = 16) {
   return randomBytes(size).toString("hex");
+}
+
+export function clamp(x: number, lower: number = 0, upper: number = Infinity) {
+  return Math.max(Math.min(x, upper), lower);
 }

@@ -5,6 +5,7 @@ import { User } from "@server/schemas";
 import expressWs from "express-ws";
 import dotenv from "dotenv";
 import { authOnly, UserPayload, verify } from "./auth";
+import { WebSocket } from "ws";
 
 dotenv.config();
 
@@ -20,6 +21,8 @@ export const wsRouter = express.Router();
 const queue = new Queue<Pair<string, number>>();
 const userMap = new Map<string, UserState>(); // uuid to username
 
+let sockets: WebSocket[] = [];
+
 const msg = (message: string) => {
   return { message };
 };
@@ -34,6 +37,8 @@ wsRouter.ws("/", (ws, req) => {
   const token = req.cookies.token ?? "";
 
   log("Websocket connected");
+
+  sockets.push(ws);
 
   verify(token, (err, payload) => {
     if (err !== null) {
@@ -77,6 +82,10 @@ wsRouter.ws("/", (ws, req) => {
           };
           userMap.set(username, state);
           queue.enqueue(make_pair(username, user.rating!));
+
+          sockets = sockets.filter(socket => socket.readyState === socket.OPEN);
+
+          sockets.forEach(socket => socket.send(JSON.stringify({ action: "refresh" })));
         }
       }
     } catch {}

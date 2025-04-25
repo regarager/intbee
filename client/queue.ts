@@ -27,6 +27,7 @@ const queue = document.getElementById("queue") as HTMLOListElement;
 const queuebtn = document.getElementById("queue-btn") as HTMLButtonElement;
 
 async function updateQueue() {
+  queue.innerHTML = "";
   try {
     const queueData = (await (await fetch("/api/ws/queue")).json()) as UserData[];
 
@@ -70,6 +71,7 @@ socket.onmessage = ev => {
 
   if (data.id) id = data.id;
   if (data.username) username = data.username;
+  if (data.action === "refresh") updateQueue();
 };
 
 queuebtn.addEventListener("click", () => {
