@@ -38,3 +38,13 @@ export function uid(size = 16) {
 export function clamp(x: number, lower: number = 0, upper: number = Infinity) {
   return Math.max(Math.min(x, upper), lower);
 }
+
+export interface UserPayload {
+  username: string;
+  iat: number;
+  exp: number;
+}
+
+export function msg(message: string) {
+  return { message };
+}

@@ -1,33 +1,25 @@
 import express from "express";
 import { file } from "@common/util";
 import dotenv from "dotenv";
-import { verify } from "./api/auth";
 
 dotenv.config();
 
 export const authRouter = express.Router();
 
-authRouter.get("/login", (req, res) => {
-  const authHeader = req.headers.authorization ?? "";
-  const token = authHeader.split(" ")[1] ?? "";
+// TODO: redirect to a user page
 
-  if (token) {
-    verify(token, err => {
-      if (err) res.render(file("/pages/login.ejs"));
-      else res.redirect("/gym");
-    });
+authRouter.get("/login", (req, res) => {
+  if (req.user) {
+    res.redirect("/gym");
+  } else {
+    res.render(file("/pages/login.ejs"));
   }
-  res.render(file("/pages/login.ejs"));
 });
 
 authRouter.get("/register", (req, res) => {
-  const authHeader = req.headers.authorization ?? "";
-  const token = authHeader.split(" ")[1] ?? "";
-
-  if (token) {
-    verify(token, err => {
-      if (err) res.sendFile(file("/pages/register.html"));
-      else res.redirect("/gym");
-    });
-  } else res.sendFile(file("/pages/register.html"));
+  if (req.user) {
+    res.redirect("/gym");
+  } else {
+    res.render(file("/pages/register.ejs"));
+  }
 });

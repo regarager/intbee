@@ -5,7 +5,7 @@ import { file, getRank, log } from "@common/util";
 import path from "path";
 import { authRouter } from "./routes/auth";
 import { gymRouter } from "./routes/gym";
-import { authAPIRouter } from "./routes/api/auth";
+import { authAPIRouter, authMiddleware } from "./routes/api/auth";
 import { problemRouter } from "./routes/api/problem";
 import cookieParser from "cookie-parser";
 import { rankedRouter } from "./routes/ranked";
@@ -27,8 +27,7 @@ if (!process.env.JWT_SECRET) {
   exit(1);
 }
 
-const appWS = expressWs(express());
-const app = appWS.app;
+const app = expressWs(express()).app;
 
 app.set("views", path.join(__dirname, "pages"));
 app.set("view engine", "ejs");
@@ -40,6 +39,8 @@ app.use(cookieParser());
 
 app.use(express.static("dist"));
 app.use(express.static("public"));
+
+app.use(authMiddleware);
 
 app.use("/api/auth", authAPIRouter);
 app.use("/api/ws", wsRouter);

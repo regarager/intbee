@@ -1,10 +1,10 @@
 import express from "express";
-import { log, uid } from "@common/util";
+import { log, msg, uid } from "@common/util";
 import { make_pair, Pair, Queue } from "@common/structs";
 import { User } from "@server/schemas";
 import expressWs from "express-ws";
 import dotenv from "dotenv";
-import { authOnly, UserPayload, verify } from "./auth";
+import { authOnly } from "./auth";
 import { WebSocket } from "ws";
 
 dotenv.config();
@@ -23,10 +23,6 @@ const userMap = new Map<string, UserState>(); // uuid to username
 
 let sockets: WebSocket[] = [];
 
-const msg = (message: string) => {
-  return { message };
-};
-
 wsRouter.get("/queue", authOnly, (_, res) => {
   const front50 = queue.slice(50);
 
@@ -34,34 +30,30 @@ wsRouter.get("/queue", authOnly, (_, res) => {
 });
 
 wsRouter.ws("/", (ws, req) => {
-  const token = req.cookies.token ?? "";
+  const { user } = req;
 
   log("Websocket connected");
 
   sockets.push(ws);
 
-  verify(token, (err, payload) => {
-    if (err !== null) {
-      log("Failed to authenticate websocket connection");
-      ws.send(JSON.stringify(msg("Authentication failed")));
-      ws.close();
+  if (!user) {
+    log("Failed to authenticate websocket connection");
+    ws.send(JSON.stringify(msg("Authentication failed")));
+    ws.close();
 
-      return;
-    }
+    return;
+  }
 
-    const user = payload as UserPayload;
+  let id = uid();
 
-    let id = uid();
+  while (userMap.has(id)) {
+    id = uid();
+  }
 
-    while (userMap.has(id)) {
-      id = uid();
-    }
+  log(`Websocket: assigning id ${id} to ${user.username}`);
 
-    log(`Websocket: assigning id ${id} to ${user.username}`);
-
-    userMap.set(id, { username: user.username, queued: false });
-    ws.send(JSON.stringify({ ...msg("Connected"), id, username: user.username }));
-  });
+  userMap.set(id, { username: user.username, queued: false });
+  ws.send(JSON.stringify({ ...msg("Connected"), id, username: user.username }));
 
   ws.on("message", async raw => {
     log(`Websocket message: ${raw.toString()}`);

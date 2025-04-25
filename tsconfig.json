@@ -13,7 +13,8 @@
     "paths": {
       "@server/*": ["./server/*"],
       "@common/*": ["./common/*"]
-    }
+    },
+    "typeRoots": ["./server/types", "./node_modules/@types"]
   },
   "include": ["./server/**/*", "./common/**/*", "./client/**/*"],
   "exclude": ["node_modules"]

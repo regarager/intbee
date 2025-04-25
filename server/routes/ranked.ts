@@ -1,6 +1,6 @@
 import express from "express";
-import { authOnly, UserPayload, verify } from "./api/auth";
-import { file, uid } from "@common/util";
+import { authOnly } from "./api/auth";
+import { file, log, uid } from "@common/util";
 
 export const rankedRouter = express.Router();
 
@@ -11,27 +11,23 @@ rankedRouter.get("/", authOnly, (_, res) => {
   res.render(file("pages/queue.ejs"));
 });
 
-rankedRouter.get("/room/:id", async (req, res) => {
-  let username = "";
-  verify(req.cookies.token ?? "", (err, payload) => {
-    if (err) {
-      res.status(404);
-    } else {
-      const user = payload as UserPayload;
-
-      username = user.username;
-    }
-  });
+rankedRouter.get("/room/:id", authOnly, async (req, res) => {
+  const { user } = req;
 
   const roomId = req.params.id;
 
-  if (!rooms.has(roomId)) {
-    res.status(404);
+  if (!user) {
+    res.status(403).redirect("/auth/login");
     return;
   }
 
-  if (userToRoom.get(username) !== roomId) {
-    res.status(404);
+  if (!rooms.has(roomId)) {
+    res.status(404).redirect("/404");
+    return;
+  }
+
+  if (userToRoom.get(user.username) !== roomId) {
+    res.status(404).redirect("/gym");
     return;
   }
 
@@ -44,10 +40,15 @@ rankedRouter.post("/room/new", (req, res) => {
     return;
   }
 
-  const roomId = uid();
+  const roomId = uid(4);
 
   const users: string[] = req.body.users;
 
   users.forEach(user => userToRoom.set(user, roomId));
   rooms.add(roomId);
+
+  log(`New room created with id ${roomId}`);
+  log(`Users in room: ${users}`);
+
+  res.send("OK");
 });

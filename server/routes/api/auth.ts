@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import argon2 from "argon2";
-import { log } from "@common/util";
+import { log, UserPayload } from "@common/util";
 import { User } from "@server/schemas";
 import dotenv from "dotenv";
 import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";
@@ -9,34 +9,32 @@ dotenv.config();
 
 const JWT_SECRET: string = process.env.JWT_SECRET ?? "";
 
-export interface UserPayload {
-  username: string;
-  iat: number;
-  exp: number;
-}
-
 export const authAPIRouter = express.Router();
-export const verify = (
-  token: string,
-  callback: (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => void,
-) => {
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    callback(err, decoded);
-  });
+
+export const authMiddleware = (req: Request, _: Response, next: NextFunction) => {
+  const token = req.cookies.token ?? "";
+
+  jwt.verify(
+    token,
+    JWT_SECRET,
+    (_: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
+      if (decoded) {
+        req.user = decoded as UserPayload;
+      }
+    },
+  );
+
+  next();
 };
 
 export const authOnly = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies.token ?? "";
-
-  verify(token, (err, user: string | JwtPayload | undefined) => {
-    if (err) {
-      log(`Unauthenticated request to ${req.url}`);
-      res.redirect("/auth/login");
-    } else {
-      log(`User ${(user as UserPayload).username} accessed ${req.url}`);
-      next();
-    }
-  });
+  if (!req.user) {
+    log(`Unauthenticated request to ${req.url}`);
+    res.redirect("/auth/login");
+  } else {
+    log(`User ${req.user} accessed ${req.url}`);
+    next();
+  }
 };
 
 authAPIRouter.post("/login", async (req, res) => {
