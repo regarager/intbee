@@ -57,6 +57,8 @@ rankedRouter.post("/room/new", (req, res) => {
   users.forEach(user => userToRoom.set(user, roomId));
   rooms.set(roomId, new Game(users));
 
+  rooms.get(roomId)!.getQuestion();
+
   log(`New room created with id ${roomId}`);
   log(`Users in room: ${users}`);
 

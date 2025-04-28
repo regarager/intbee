@@ -20,8 +20,7 @@ export const wsRouter = express.Router();
 
 const queue = new Queue<Pair<string, number>>();
 const userMap = new Map<string, UserState>(); // uuid to username
-
-let sockets: WebSocket[] = [];
+const sockets = new Map<string, WebSocket>();
 
 wsRouter.get("/queue", authOnly, (_, res) => {
   const front50 = queue.slice(50);
@@ -34,8 +33,6 @@ wsRouter.ws("/", (ws, req) => {
 
   log("Websocket connected");
 
-  sockets.push(ws);
-
   if (!user) {
     log("Failed to authenticate websocket connection");
     ws.send(JSON.stringify(msg("Authentication failed")));
@@ -43,6 +40,8 @@ wsRouter.ws("/", (ws, req) => {
 
     return;
   }
+
+  sockets.set(user.username, ws);
 
   let id = uid();
 
@@ -75,7 +74,11 @@ wsRouter.ws("/", (ws, req) => {
           userMap.set(username, state);
           queue.enqueue(make_pair(username, user.rating!));
 
-          sockets = sockets.filter(socket => socket.readyState === socket.OPEN);
+          for (const k in sockets.keys()) {
+            if (sockets.get(k)!.readyState !== WebSocket.OPEN) {
+              sockets.delete(k);
+            }
+          }
 
           sockets.forEach(socket => socket.send(JSON.stringify({ action: "refresh" })));
         }
@@ -83,7 +86,34 @@ wsRouter.ws("/", (ws, req) => {
         const user = req.user!.username;
 
         const roomId = userToRoom.get(user);
+
+        if (!roomId) return;
+        const game = rooms.get(roomId)!;
+
+        if (data.answer.replace(/ /g, "") === game.answer.replace(/ /g, "")) {
+          if (user === game.players[0]) {
+            rooms.get(roomId)!.score.first++;
+            log(`correct ${game.players[0]}`);
+          } else {
+            rooms.get(roomId)!.score.second++;
+            log(`correct ${game.players[1]}`);
+          }
+
+          rooms.get(roomId)!.getQuestion();
+
+          rooms.get(roomId)!.players.forEach(player => {
+            sockets.get(player)!.send(JSON.stringify(rooms.get(roomId)));
+          });
+        }
+      } else if (action === "fetch") {
+        const user = req.user!.username;
+
+        const roomId = userToRoom.get(user);
+
+        if (!roomId) return;
         const game = rooms.get(roomId);
+
+        ws.send(JSON.stringify(game));
       }
     } catch {}
   });

@@ -5,12 +5,16 @@ function main() {
   const socket = new WebSocket(wsUrl);
   let username = "";
 
+  socket.onopen = () => {
+    socket.send(JSON.stringify({ action: "fetch" }));
+  };
+
   socket.onmessage = raw => {
     const data = JSON.parse(raw.data + "");
 
     if (data.username) {
       username = data.username;
-    } else update(JSON.parse(data.data + "") as Game);
+    } else update(data as Game);
   };
 
   function update(game: Game) {
@@ -25,6 +29,8 @@ function main() {
       document.getElementById("pscore2")!.innerText = score.first.toString();
       document.getElementById("pscore1")!.innerText = score.second.toString();
     }
+
+    document.getElementById("problem-content")!.innerText = `$$${game.problem}$$`;
   }
 
   function sendAnswer() {

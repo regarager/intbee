@@ -1,6 +1,7 @@
 import { make_pair, Pair } from "@common/structs";
 import { cdf } from "./statistics";
 import { Problem } from "./schemas";
+import { log } from "console";
 
 export class Rating {
   private rating: number;
@@ -33,27 +34,32 @@ export class Game {
   public score: Pair<number, number>;
   private used: string[];
   public round: number;
+  public problem: string;
+  public answer: string;
 
   constructor(players: string[]) {
     this.players = players;
     this.score = make_pair(0, 0);
     this.used = [];
     this.round = 1;
+    this.problem = "";
+    this.answer = "";
   }
 
   async getQuestion() {
-    const problems = await Problem.aggregate([
-      {
-        $match: { _id: { $nin: this.used } },
-      },
-      {
-        $sample: { size: 1 },
-      },
-    ]);
+    const res = (
+      await Problem.find()
+        .skip(Math.floor(Math.random() * 10))
+        .limit(1)
+        .sort({ rating: -1, _id: 1 })
+    )[0];
 
-    const res = problems[0];
+    log(res);
 
     this.used.push(res.id);
+
+    this.problem = res.latex!;
+    this.answer = res.answer!;
 
     return res;
   }
