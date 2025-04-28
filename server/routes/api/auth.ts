@@ -47,6 +47,7 @@ authAPIRouter.post("/login", async (req, res) => {
   const password = req.body.password;
 
   if (!username || !password) {
+    log("Failed attempt to log in, missing username or password");
     res.status(400).send({ message: "Authentication failure" });
     return;
   }
@@ -57,11 +58,14 @@ authAPIRouter.post("/login", async (req, res) => {
     res.status(407).send({ message: `User ${username} does not exist` });
   } else if (await argon2.verify(user.password!, password)) {
     const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "24h" });
+
+    log(`User ${username} logged in`);
     res
       .status(200)
       .cookie("token", token, { maxAge: 86400 * 1000 })
       .send({ message: "Successfully authenticated!", token });
   } else {
+    log(`Unsuccessful authentication for user ${username}`);
     res.status(407).send({ message: "Authentication failure" });
   }
 });
@@ -77,14 +81,17 @@ authAPIRouter.post("/register", async (req, res) => {
   const email = req.body.email;
 
   if (!username || !password || !email) {
+    log("Failed attempt to log in, missing username, email, or password");
     res.status(400).send({ message: "Authentication failure" });
     return;
   }
 
   if (await User.exists({ username })) {
+    log(`Failed authentication: Account with username ${username} already exists`);
     res.status(409).send({ error: `Account with username ${username} already exists` });
     return;
   } else if (await User.exists({ email })) {
+    log(`Failed authentication: Account with email ${email} already exists`);
     res.status(409).send({ error: `Account with email ${email} already exists` });
     return;
   }
@@ -94,9 +101,9 @@ authAPIRouter.post("/register", async (req, res) => {
   const user = new User({ username, email, password: hashed, rating: 500, role: "user" });
   await user.save();
 
-  const token = jwt.sign(username, JWT_SECRET, { expiresIn: "24h" });
+  const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "24h" });
   res
     .status(200)
     .cookie("token", token, { maxAge: 86400 * 1000 })
-    .send({ message: "Successfully registered!", token });
+    .send({ message: "Successfully authenticated!", token });
 });

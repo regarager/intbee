@@ -10,17 +10,19 @@
   <%- include("../components/header.ejs") %>
   <div class="container">
     <form id="login-form">
-      <span class="title">Login</span>
+      <span class="title">Register</span>
       <span id="result" hidden></span>
       <label for="username">Username</label>
       <input type="text" name="username" />
+      <label for="username">Email</label>
+      <input type="text" name="email" />
       <label for="password">Password</label>
       <input type="password" name="password" />
-      <span><a href="/auth/register">Register</a> instead?</span>
+      <span><a href="/auth/login">Login</a> instead?</span>
       <span id="form-footer">
         <button id="submit-btn">Submit</button>
       </span>
     </form>
   </div>
-  <script src="/login-bundle.js"></script>
+  <script src="/register-bundle.js"></script>
 </html>

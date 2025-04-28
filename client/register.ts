@@ -9,7 +9,7 @@ form?.addEventListener("submit", async e => {
   const body = Object.fromEntries(formData.entries());
 
   try {
-    await fetch("/api/auth/login", {
+    await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -32,7 +32,7 @@ form?.addEventListener("submit", async e => {
 
     if (authResult !== null) {
       authResult.hidden = false;
-      authResult.innerText = "Invalid username or password.";
+      authResult.innerText = "Invalid username or password. (maybe try logging in?)";
       authResult.style.color = "red";
     } else {
       alert("Invalid username or password.");
@@ -40,4 +40,5 @@ form?.addEventListener("submit", async e => {
   }
 });
 
+// apparently theres some error if this line gets removed
 export {};
