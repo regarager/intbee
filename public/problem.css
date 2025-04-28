@@ -30,3 +30,8 @@
   margin-top: 0.25em;
   margin-bottom: 0.25em;
 }
+
+#answer-input {
+  min-width: 15em;
+  min-height: 2em;
+}
