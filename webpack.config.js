@@ -5,6 +5,7 @@ module.exports = {
   devtool: "inline-source-map",
   entry: {
     login: "./client/login.ts",
+    room: "./client/room.ts",
     register: "./client/register.ts",
     problem: "./client/problem.ts",
     queue: "./client/queue.ts",
