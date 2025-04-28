@@ -10,7 +10,7 @@
   display: flex;
   border: 2px solid black;
   border-radius: 1em;
-  width: 18em;
+  width: 20em;
   height: 10em;
   font-size: 1.5em;
   justify-content: center;
@@ -24,4 +24,9 @@
   justify-content: flex-start;
   padding-left: 1em;
   font-size: 1.2em;
+}
+
+.solution {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
 }

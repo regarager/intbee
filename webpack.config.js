@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     login: "./client/login.ts",
     register: "./client/register.ts",
+    problem: "./client/problem.ts",
     queue: "./client/queue.ts",
   },
   output: {

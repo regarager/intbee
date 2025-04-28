@@ -20,7 +20,18 @@
         <div class="tag"><%= tag %></div>
         <% } %>
       </div>
+      <div class="solution">
+        <b>Solution:</b> <button id="show-sol">(click to reveal)</button>
+        <span id="problem-solution" hidden>$$<%= problem.answer %>$$</span>
+      </div>
+      <form id="submission">
+        <label for="answer"><b>Answer:</b></label>
+        <input type="text" name="answer" id="answer-input" />
+        <button type="submit" id="submit-btn">Submit</button>
+      </form>
+      <b id="result" hidden></b>
     </div>
+    <script src="/problem-bundle.js"></script>
     <script
       id="MathJax-script"
       async
