@@ -9,7 +9,38 @@
   <%- include("../components/header.ejs") %>
   <div class="container">
     <h1>Room - <%= id %></h1>
+    <div class="problem" id="rating-comparison">
+      <h2>Player Ratings</h2>
+      <p><%= player.username %> Rating: <%= player.rating %></p>
+      <p><%= opponent.username %> Rating: <%= opponent.rating %></p>
+    </div>
   </div>
+  <div class="match-status">
+    <h2 id="game-round">Round <%= game.round %></h2>
+    <div class="score-display">
+      <p>
+        Current Score:
+        <span class="score"
+          ><%= player.username %>: <span id="pscore1"><%= game.score.first %></span></span
+        >
+        -
+        <span class="score"
+          ><%= opponent.username %>: <span id="pscore2"><%= game.score.second %></span></span
+        >
+      </p>
+    </div>
+  </div>
+  <div class="problem-container">
+    <h2>Problem #<%= game.round %></h2>
+    <div class="problem-content"><!-- display question -->></div>
+  </div>
+  <div class="answer-container">
+    <form id="answer">
+      <input type="text" name="answer" id="answer-input" />
+      <button type="submit">SUBMIT</button>
+    </form>
+  </div>
+  <script></script>
   <script
     id="MathJax-script"
     async
@@ -26,5 +57,5 @@
       },
     };
   </script>
-  <script src="/queue-bundle.js"></script>
+  <script src="/room-bundle.js"></script>
 </html>

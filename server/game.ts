@@ -29,10 +29,10 @@ export class Rating {
 }
 
 export class Game {
-  private players: string[];
-  private score: Pair<number, number>;
+  public players: string[];
+  public score: Pair<number, number>;
   private used: string[];
-  private round: number;
+  public round: number;
 
   constructor(players: string[]) {
     this.players = players;

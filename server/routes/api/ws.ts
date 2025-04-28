@@ -6,7 +6,7 @@ import expressWs from "express-ws";
 import dotenv from "dotenv";
 import { authOnly } from "./auth";
 import { WebSocket } from "ws";
-
+import { userToRoom, rooms } from "../ranked";
 dotenv.config();
 
 interface UserState {
@@ -79,6 +79,11 @@ wsRouter.ws("/", (ws, req) => {
 
           sockets.forEach(socket => socket.send(JSON.stringify({ action: "refresh" })));
         }
+      } else if (action === "submit") {
+        const user = req.user!.username;
+
+        const roomId = userToRoom.get(user);
+        const game = rooms.get(roomId);
       }
     } catch {}
   });
