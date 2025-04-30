@@ -1,10 +1,11 @@
+@import url("./colors.css");
+
 .header {
-  /* background-color: #3333b2; */
   display: flex;
   flex: 1;
   flex-direction: row;
 
-  background-color: #7575cb;
+  background-color: var(--primary-color);
   color: white;
   font-size: 1.25em;
   padding: 1em;
