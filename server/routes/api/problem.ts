@@ -1,19 +1,9 @@
 import express from "express";
 import { Problem } from "@server/schemas";
-import { ComputeEngine } from "@cortex-js/compute-engine";
 import { log } from "@common/util";
+import { approx, compute } from "@common/compute";
 
 export const problemRouter = express.Router();
-
-const ce = new ComputeEngine();
-
-function compute(expr: string): number {
-  return ce.parse(expr).N().value as number;
-}
-
-function approx(a: number, b: number) {
-  return Math.abs(a - b) <= 1e-10;
-}
 
 problemRouter.post("/:id/verify", async (req, res) => {
   const id = req.params.id ?? "";

@@ -35,3 +35,8 @@ button {
   border-radius: 0.5em;
   padding: 0.5em;
 }
+
+math-field {
+  min-width: 15em;
+  min-height: 2em;
+}

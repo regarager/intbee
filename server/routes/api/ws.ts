@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { authOnly } from "./auth";
 import { WebSocket } from "ws";
 import { userToRoom, rooms } from "../ranked";
+import { approx, compute } from "@common/compute";
 dotenv.config();
 
 interface UserState {
@@ -90,7 +91,9 @@ wsRouter.ws("/", (ws, req) => {
         if (!roomId) return;
         const game = rooms.get(roomId)!;
 
-        if (data.answer.replace(/ /g, "") === game.answer.replace(/ /g, "")) {
+        log(`Submission from ${user} in room ${roomId}: ${data.answer} (${compute(data.answer)})`);
+
+        if (approx(compute(game.answer), compute(data.answer))) {
           if (user === game.players[0]) {
             rooms.get(roomId)!.score.first++;
             log(`correct ${game.players[0]}`);

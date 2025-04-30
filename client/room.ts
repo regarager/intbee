@@ -18,7 +18,7 @@ function main() {
   };
 
   function update(game: Game) {
-    document.getElementById("game-round")!.innerText = `Round ${game.round}`;
+    document.getElementById("round-display")!.innerText = `Round #${game.round}`;
 
     const score = game.score;
 
@@ -30,7 +30,7 @@ function main() {
       document.getElementById("pscore1")!.innerText = score.second.toString();
     }
 
-    document.getElementById("problem-content")!.innerText = `$$${game.problem}$$`;
+    document.getElementById("problem-content")!.innerText = `$$${game.problem} dx $$`;
   }
 
   function sendAnswer() {
@@ -39,7 +39,7 @@ function main() {
     socket.send(JSON.stringify({ action: "submit", answer: input.value }));
   }
 
-  document.getElementById("answer")?.addEventListener("submit", e => {
+  document.getElementById("answer-form")?.addEventListener("submit", e => {
     e.preventDefault();
 
     sendAnswer();

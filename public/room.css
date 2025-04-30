@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.problem {
+  display: flex;
+  border: 2px solid black;
+  border-radius: 1em;
+  width: 20em;
+  height: 10em;
+  font-size: 1.5em;
+  justify-content: center;
+  align-self: center;
+  align-items: center;
+}
+
+.answer-form {
+  margin-top: 1em;
+}
+
+.top {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1em;
+}
+
+.footer {
+  margin-top: 1em;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-self: flex-end;
+  width: 100%;
+}
+
+.progress-container {
+  width: 60vw;
+  background-color: gray;
+  height: 1em;
+  align-self: flex-start;
+  border-radius: 1em;
+}
+
+#progress-bar {
+  width: 50vw;
+  background-color: green;
+  height: 1em;
+  border-radius: 1em;
+}
+
+#player-ratings {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  margin-left: 0.5em;
+}
+
+#round-display {
+  margin-left: 1em;
+}

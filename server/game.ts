@@ -54,8 +54,6 @@ export class Game {
         .sort({ rating: -1, _id: 1 })
     )[0];
 
-    log(res);
-
     this.used.push(res.id);
 
     this.problem = res.latex!;

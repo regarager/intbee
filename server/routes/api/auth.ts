@@ -32,7 +32,7 @@ export const authOnly = (req: Request, res: Response, next: NextFunction) => {
     log(`Unauthenticated request to ${req.url}`);
     res.redirect("/auth/login");
   } else {
-    log(`User ${req.user} accessed ${req.url}`);
+    log(`User ${req.user.username} accessed ${req.url}`);
     next();
   }
 };

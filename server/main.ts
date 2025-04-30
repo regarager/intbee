@@ -50,6 +50,10 @@ app.use("/auth", authRouter);
 app.use("/gym", gymRouter);
 app.use("/ranked", rankedRouter);
 
+app.get("/", (_, res) => {
+  res.redirect("/gym");
+});
+
 app.use((_: Request, res: Response) => {
   res.render(file("pages/404.ejs"));
 });
