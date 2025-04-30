@@ -46,6 +46,12 @@ export class Queue<T> {
 
     this.head = this.head.next;
 
+    if (this.length === 1) {
+      this.tail = null;
+    }
+
+    this.length--;
+
     return res;
   }
 

@@ -26,9 +26,12 @@ const queue = document.getElementById("queue") as HTMLOListElement;
 const queuebtn = document.getElementById("queue-btn") as HTMLButtonElement;
 
 async function updateQueue() {
+  console.log("Updating queue...");
   queue.innerHTML = "";
   try {
     const queueData = (await (await fetch("/api/ws/queue")).json()) as UserData[];
+
+    console.log(`Received queue data: ${queueData}`);
 
     queueData.forEach(data => {
       const username = data.first;
@@ -70,8 +73,9 @@ socket.onmessage = ev => {
 
   if (data.action === "info") {
     if (data.username) username = data.username;
-  } else if (data.action === "refresh") updateQueue();
-  else if (data.action === "redirect") {
+  } else if (data.action === "refresh") {
+    updateQueue();
+  } else if (data.action === "redirect") {
     const roomId = data.roomId;
 
     window.location.href = "/ranked/room/" + roomId;

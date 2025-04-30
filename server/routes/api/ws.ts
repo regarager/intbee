@@ -47,19 +47,14 @@ wsRouter.ws("/", (ws, req) => {
       const data = JSON.parse(raw.toString());
 
       const action: string = data.action ?? "";
-      const username: string = data.username ?? "";
+      const username: string = req.user ? req.user.username : "";
 
       const user = await User.findOne({ username });
 
       if (action === "queue") {
-        if (user && !userToRoom.has(username)) {
+        if (user !== null && !userToRoom.get(username)) {
+          log(`Enqueued ${username}`);
           queue.enqueue(make_pair(username, user.rating!));
-
-          for (const k in sockets.keys()) {
-            if (sockets.get(k)!.readyState !== WebSocket.OPEN) {
-              sockets.delete(k);
-            }
-          }
 
           if (queue.size() >= 2) {
             const player1 = queue.dequeue();
@@ -81,9 +76,9 @@ wsRouter.ws("/", (ws, req) => {
               userToRoom.set(user, roomId);
             });
           }
-
-          sockets.forEach(socket => socket.send(JSON.stringify({ action: "refresh" })));
         }
+
+        sockets.forEach(socket => socket.send(JSON.stringify({ action: "refresh" })));
       } else if (action === "submit") {
         const user = req.user!.username;
 
@@ -142,6 +137,7 @@ wsRouter.ws("/", (ws, req) => {
           });
 
           rooms.delete(roomId);
+          game.players.forEach(p => userToRoom.delete(p));
 
           log(`Room ${roomId} is over`);
         }
