@@ -1,4 +1,4 @@
-import { make_pair, Pair } from "@common/structs";
+import { make_pair, Pair } from "@util/structs";
 import { Game } from "@server/game";
 
 function main() {

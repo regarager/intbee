@@ -37,9 +37,9 @@ function showResult(result: boolean) {
 
   if (result) {
     resElement.innerText = "Verdict: correct!";
-    resElement.style = "color: green;";
+    resElement.style.color = "green;";
   } else {
     resElement.innerText = "Verdict: incorrect";
-    resElement.style = "color: red;";
+    resElement.style.color = "red;";
   }
 }

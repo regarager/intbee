@@ -1,4 +1,4 @@
-import { clamp } from "@common/util";
+import { clamp } from "@util/common";
 
 const values = [
   2.866515718791933e-7, 4.791832765903185e-7, 7.93328151975595e-7, 1.3008074539172771e-6,

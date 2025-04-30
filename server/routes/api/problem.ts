@@ -1,7 +1,7 @@
 import express from "express";
 import { Problem } from "@server/schemas";
-import { log } from "@common/util";
-import { approx, compute } from "@common/compute";
+import { log } from "@util/common";
+import { approx, compute } from "@util/server";
 
 export const problemRouter = express.Router();
 

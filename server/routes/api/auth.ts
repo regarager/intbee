@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import argon2 from "argon2";
-import { log, UserPayload } from "@common/util";
+import { log } from "@util/common";
+import { UserPayload } from "@util/server";
 import { User } from "@server/schemas";
 import dotenv from "dotenv";
 import jwt, { JwtPayload, VerifyErrors } from "jsonwebtoken";

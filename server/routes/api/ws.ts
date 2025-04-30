@@ -1,13 +1,14 @@
 import express from "express";
-import { log, msg, uid } from "@common/util";
-import { make_pair, Pair, Queue } from "@common/structs";
+import { log, msg } from "@util/common";
+import { uid } from "@util/server";
+import { make_pair, Pair, Queue } from "@util/structs";
+import { approx, compute } from "@util/server";
 import { User } from "@server/schemas";
 import expressWs from "express-ws";
 import dotenv from "dotenv";
 import { authOnly } from "./auth";
 import { WebSocket } from "ws";
 import { userToRoom, rooms } from "../ranked";
-import { approx, compute } from "@common/compute";
 import { Game, Rating } from "@server/game";
 
 dotenv.config();

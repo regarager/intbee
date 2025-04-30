@@ -1,4 +1,4 @@
-import { UserPayload } from "@common/util";
+import { UserPayload } from "@util/server";
 
 declare global {
   namespace Express {

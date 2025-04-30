@@ -1,6 +1,6 @@
 import express from "express";
 import { authOnly } from "./api/auth";
-import { file } from "@common/util";
+import { file } from "@util/server";
 import { Game } from "../game";
 import { User } from "@server/schemas";
 

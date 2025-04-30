@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { file, getRank, log } from "@common/util";
+import { file } from "@util/server";
+import { getRank, log } from "@util/common";
 import path from "path";
 import { authRouter } from "./routes/auth";
 import { gymRouter } from "./routes/gym";
