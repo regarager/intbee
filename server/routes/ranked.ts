@@ -1,6 +1,6 @@
 import express from "express";
 import { authOnly } from "./api/auth";
-import { file, log, uid } from "@common/util";
+import { file } from "@common/util";
 import { Game } from "../game";
 import { User } from "@server/schemas";
 
@@ -42,25 +42,4 @@ rankedRouter.get("/room/:id", authOnly, async (req, res) => {
     }),
     game,
   });
-});
-
-rankedRouter.post("/room/new", (req, res) => {
-  if (req.body.secret !== process.env.JWT_SECRET!) {
-    res.status(403);
-    return;
-  }
-
-  const roomId = uid(4);
-
-  const users: string[] = req.body.users;
-
-  users.forEach(user => userToRoom.set(user, roomId));
-  rooms.set(roomId, new Game(users));
-
-  rooms.get(roomId)!.getQuestion();
-
-  log(`New room created with id ${roomId}`);
-  log(`Users in room: ${users}`);
-
-  res.send("OK");
 });

@@ -8,19 +8,15 @@ import { authOnly } from "./auth";
 import { WebSocket } from "ws";
 import { userToRoom, rooms } from "../ranked";
 import { approx, compute } from "@common/compute";
-dotenv.config();
+import { Game, Rating } from "@server/game";
 
-interface UserState {
-  username: string;
-  queued: boolean;
-}
+dotenv.config();
 
 export const wsRouter = express.Router();
 
 (expressWs as any)(wsRouter);
 
 const queue = new Queue<Pair<string, number>>();
-const userMap = new Map<string, UserState>(); // uuid to username
 const sockets = new Map<string, WebSocket>();
 
 wsRouter.get("/queue", authOnly, (_, res) => {
@@ -44,17 +40,6 @@ wsRouter.ws("/", (ws, req) => {
 
   sockets.set(user.username, ws);
 
-  let id = uid();
-
-  while (userMap.has(id)) {
-    id = uid();
-  }
-
-  log(`Websocket: assigning id ${id} to ${user.username}`);
-
-  userMap.set(id, { username: user.username, queued: false });
-  ws.send(JSON.stringify({ ...msg("Connected"), id, username: user.username }));
-
   ws.on("message", async raw => {
     log(`Websocket message: ${raw.toString()}`);
 
@@ -67,18 +52,34 @@ wsRouter.ws("/", (ws, req) => {
       const user = await User.findOne({ username });
 
       if (action === "queue") {
-        if (user && !userMap.get(username)?.queued) {
-          const state: UserState = {
-            ...(userMap.get(username) ?? { username, queued: false }),
-            queued: true,
-          };
-          userMap.set(username, state);
+        if (user && !userToRoom.has(username)) {
           queue.enqueue(make_pair(username, user.rating!));
 
           for (const k in sockets.keys()) {
             if (sockets.get(k)!.readyState !== WebSocket.OPEN) {
               sockets.delete(k);
             }
+          }
+
+          if (queue.size() >= 2) {
+            const player1 = queue.dequeue();
+            const player2 = queue.dequeue();
+
+            const users = [player1.first, player2.first];
+
+            const roomId = uid(4);
+
+            users.forEach(user => userToRoom.set(user, roomId));
+            rooms.set(roomId, new Game(users, make_pair(player1.second, player2.second)));
+            rooms.get(roomId)!.getQuestion();
+
+            log(`New room created with id ${roomId}`);
+            log(`Users in room: ${users}`);
+
+            users.forEach(user => {
+              sockets.get(user)!.send(JSON.stringify({ action: "redirect", roomId }));
+              userToRoom.set(user, roomId);
+            });
           }
 
           sockets.forEach(socket => socket.send(JSON.stringify({ action: "refresh" })));
@@ -102,11 +103,47 @@ wsRouter.ws("/", (ws, req) => {
             log(`correct ${game.players[1]}`);
           }
 
-          rooms.get(roomId)!.getQuestion();
+          if (game.winner() === -1) {
+            game.round++;
 
-          rooms.get(roomId)!.players.forEach(player => {
-            sockets.get(player)!.send(JSON.stringify(rooms.get(roomId)));
+            await game.getQuestion();
+
+            game.players.forEach(player => {
+              sockets.get(player)!.send(JSON.stringify({ action: "update", ...rooms.get(roomId) }));
+            });
+
+            return;
+          }
+
+          const winner = game.winner();
+          const { ratings } = game;
+
+          const abs_changes = make_pair(
+            new Rating(ratings.first).win(ratings.second),
+            new Rating(ratings.second).win(ratings.first),
+          );
+
+          const wuser = (await User.findOne({ username: game.players[winner] }))!;
+
+          await User.updateOne(
+            { username: game.players[winner] },
+            { rating: wuser.rating! + (winner === 0 ? abs_changes.first : abs_changes.second) },
+          );
+
+          const luser = (await User.findOne({ username: game.players[1 - winner] }))!;
+
+          await User.updateOne(
+            { username: game.players[1 - winner] },
+            { rating: luser.rating! - (winner === 0 ? abs_changes.first : abs_changes.second) },
+          );
+
+          game.players.forEach(player => {
+            sockets.get(player)!.send(JSON.stringify({ action: "update", ...rooms.get(roomId) }));
           });
+
+          rooms.delete(roomId);
+
+          log(`Room ${roomId} is over`);
         }
       } else if (action === "fetch") {
         const user = req.user!.username;
@@ -116,7 +153,33 @@ wsRouter.ws("/", (ws, req) => {
         if (!roomId) return;
         const game = rooms.get(roomId);
 
-        ws.send(JSON.stringify(game));
+        ws.send(JSON.stringify({ action: "update", ...game }));
+      } else if (action === "getinfo") {
+        let ratingChanges: Pair<number, number> = make_pair(0, 0);
+
+        const user = req.user!.username;
+
+        const roomId = userToRoom.get(user);
+
+        if (!roomId) {
+          ws.send(JSON.stringify({ action: "info", username: user }));
+          return;
+        }
+        const game = rooms.get(roomId)!;
+
+        const { ratings } = game;
+
+        if (user === game.players[0]) {
+          const rating = new Rating(ratings.first);
+
+          ratingChanges = make_pair(rating.win(ratings.second), rating.lose(ratings.second));
+        } else {
+          const rating = new Rating(ratings.second);
+
+          ratingChanges = make_pair(rating.win(ratings.first), rating.lose(ratings.first));
+        }
+
+        ws.send(JSON.stringify({ action: "info", username: user, ratingChanges }));
       }
     } catch {}
   });

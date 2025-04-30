@@ -1,7 +1,6 @@
 import { make_pair, Pair } from "@common/structs";
 import { cdf } from "./statistics";
 import { Problem } from "./schemas";
-import { log } from "console";
 
 export class Rating {
   private rating: number;
@@ -25,20 +24,22 @@ export class Rating {
   }
 
   lose(other: number) {
-    return Rating.POINT_TOTAL - this.win(other);
+    return -(Rating.POINT_TOTAL - this.win(other));
   }
 }
 
 export class Game {
   public players: string[];
+  public ratings: Pair<number, number>;
   public score: Pair<number, number>;
   private used: string[];
   public round: number;
   public problem: string;
   public answer: string;
 
-  constructor(players: string[]) {
+  constructor(players: string[], ratings: Pair<number, number>) {
     this.players = players;
+    this.ratings = ratings;
     this.score = make_pair(0, 0);
     this.used = [];
     this.round = 1;
@@ -60,5 +61,15 @@ export class Game {
     this.answer = res.answer!;
 
     return res;
+  }
+
+  winner() {
+    if (this.score.first >= 2) {
+      return 0;
+    } else if (this.score.second >= 2) {
+      return 1;
+    }
+
+    return -1;
   }
 }

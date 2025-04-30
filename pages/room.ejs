@@ -12,13 +12,19 @@
       <div class="progress-container">
         <div id="progress-bar"></div>
       </div>
-      <div id="player-ratings">
-        <span>
-          <%- include("../components/rating.ejs", {text: player.username, rating: player.rating}) %>
-          (<%= player.rating %>) vs. <%- include("../components/rating.ejs", {text:
-          opponent.username, rating: opponent.rating}) %> (<%= opponent.rating %>)
-        </span>
-      </div>
+      <span style="margin-left: 0.5em">
+        <div id="player-ratings">
+          <span>
+            <%- include("../components/rating.ejs", {text: player.username, rating: player.rating})
+            %> (<%= player.rating %>) vs. <%- include("../components/rating.ejs", {text:
+            opponent.username, rating: opponent.rating}) %> (<%= opponent.rating %>)
+          </span>
+        </div>
+        <div id="rating-change" hidden>
+          <b>Win: <span id="rating-win"></span></b>
+          <b>Lose: <span id="rating-lose"></span></b>
+        </div>
+      </span>
     </div>
     <div class="main">
       <span>
@@ -46,6 +52,10 @@
         </p>
         <p><b>First to 2 wins!</b></p>
       </div>
+    </div>
+    <div id="game-result" hidden>
+      <p id="winner"></p>
+      <a href="/ranked">Play again?</a>
     </div>
   </div>
 

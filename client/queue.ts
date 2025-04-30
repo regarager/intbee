@@ -20,7 +20,6 @@ interface UserData {
 const wsUrl = "ws://localhost:3000/api/ws";
 const socket = new WebSocket(wsUrl);
 
-let id = "";
 let username = "";
 
 const queue = document.getElementById("queue") as HTMLOListElement;
@@ -62,16 +61,21 @@ async function updateQueue() {
 
 updateQueue();
 
-socket.onopen = () => {
-  console.log("Connected to ws");
+window.onload = () => {
+  socket.send(JSON.stringify({ action: "getinfo" }));
 };
 
 socket.onmessage = ev => {
   const data = JSON.parse(ev.data);
 
-  if (data.id) id = data.id;
-  if (data.username) username = data.username;
-  if (data.action === "refresh") updateQueue();
+  if (data.action === "info") {
+    if (data.username) username = data.username;
+  } else if (data.action === "refresh") updateQueue();
+  else if (data.action === "redirect") {
+    const roomId = data.roomId;
+
+    window.location.href = "/ranked/room/" + roomId;
+  }
 };
 
 queuebtn.addEventListener("click", () => {

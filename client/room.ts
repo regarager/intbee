@@ -1,3 +1,4 @@
+import { make_pair, Pair } from "@common/structs";
 import { Game } from "@server/game";
 
 function main() {
@@ -7,15 +8,37 @@ function main() {
 
   socket.onopen = () => {
     socket.send(JSON.stringify({ action: "fetch" }));
+    socket.send(JSON.stringify({ action: "getinfo" }));
   };
 
   socket.onmessage = raw => {
     const data = JSON.parse(raw.data + "");
+    const { action } = data;
 
-    if (data.username) {
+    if (action === "info") {
       username = data.username;
-    } else update(data as Game);
+
+      updateRatingChanges(data.ratingChanges ?? make_pair(0, 0));
+    } else if (action == "update") {
+      update(data as Game);
+    }
   };
+
+  function updateRatingChanges(changes: Pair<number, number>) {
+    document.getElementById("rating-win")!.innerText = "+" + changes.first.toString();
+    document.getElementById("rating-lose")!.innerText = changes.second.toString();
+    document.getElementById("rating-change")!.hidden = false;
+  }
+
+  function winner(game: Game) {
+    if (game.score.first === 2) {
+      return 0;
+    } else if (game.score.second == 2) {
+      return 1;
+    }
+
+    return -1;
+  }
 
   function update(game: Game) {
     document.getElementById("round-display")!.innerText = `Round #${game.round}`;
@@ -31,6 +54,14 @@ function main() {
     }
 
     document.getElementById("problem-content")!.innerText = `$$${game.problem} dx $$`;
+
+    if (winner(game) > -1) {
+      socket.close();
+
+      document.getElementById("winner")!.innerText = `Winner: ${game.players[winner(game)]}!`;
+
+      document.getElementById("game-result")!.hidden = false;
+    }
   }
 
   function sendAnswer() {
