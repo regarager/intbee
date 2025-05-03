@@ -1,5 +1,5 @@
 import express from "express";
-import { file } from "@common/util";
+import { file } from "@util/server";
 import dotenv from "dotenv";
 
 dotenv.config();

@@ -36,10 +36,10 @@ function showResult(result: boolean) {
   resElement.hidden = false;
 
   if (result) {
+    resElement.className = "correct";
     resElement.innerText = "Verdict: correct!";
-    resElement.style = "color: green;";
   } else {
+    resElement.className = "incorrect";
     resElement.innerText = "Verdict: incorrect";
-    resElement.style = "color: red;";
   }
 }

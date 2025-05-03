@@ -1,13 +1,19 @@
 import express from "express";
 import { authOnly } from "./api/auth";
-import { file } from "@common/util";
-import { Game } from "../game";
+import { file } from "@util/server";
 import { User } from "@server/schemas";
+import expressWs from "express-ws";
+import { log } from "console";
+import { msg } from "@util/common";
+import { RankedHandler } from "@server/ws/rankedhandler";
+import { QueueHandler } from "@server/ws/queuehandler";
 
 export const rankedRouter = express.Router();
 
-export const userToRoom = new Map<string, string>();
-export const rooms = new Map<string, Game>();
+(expressWs as any)(rankedRouter);
+
+const rankedHandler = new RankedHandler();
+const queueHandler = new QueueHandler(rankedHandler);
 
 rankedRouter.get("/", authOnly, (_, res) => {
   res.render(file("pages/queue.ejs"));
@@ -16,30 +22,66 @@ rankedRouter.get("/", authOnly, (_, res) => {
 rankedRouter.get("/room/:id", authOnly, async (req, res) => {
   const { user } = req;
 
-  const roomId = req.params.id;
+  const gameId = req.params.id;
 
   if (!user) {
     res.status(403).redirect("/auth/login");
     return;
   }
 
-  if (!rooms.has(roomId)) {
+  if (!rankedHandler.games.has(gameId)) {
     res.status(404).redirect("/404");
     return;
   }
 
-  if (userToRoom.get(user.username) !== roomId) {
+  if (rankedHandler.users.get(user.username) !== gameId) {
     res.status(404).redirect("/gym");
     return;
   }
 
-  const game = rooms.get(roomId)!;
+  const game = rankedHandler.games.get(gameId)!;
   res.render(file("pages/room.ejs"), {
-    id: roomId,
+    id: gameId,
     player: await User.findOne({ username: user.username }),
     opponent: await User.findOne({
       username: game.players[game.players[0] === user.username ? 1 : 0],
     }),
     game,
+  });
+});
+
+rankedRouter.get("/queue", authOnly, (_, res) => {
+  const front50 = queueHandler.queue.slice(50);
+
+  res.send(front50);
+});
+
+rankedRouter.ws("/ws/game", (ws, req) => {
+  const { user } = req;
+
+  if (!user) {
+    log("Failed to authenticate websocket connection");
+    ws.send(JSON.stringify(msg("Failed authentication")));
+    ws.close();
+    return;
+  }
+
+  ws.on("message", async raw => {
+    rankedHandler.process(ws, user.username, raw);
+  });
+});
+
+rankedRouter.ws("/ws/queue", (ws, req) => {
+  const { user } = req;
+
+  if (!user) {
+    log("Failed to authenticate websocket connection");
+    ws.send(JSON.stringify(msg("Failed authentication")));
+    ws.close();
+    return;
+  }
+
+  ws.on("message", async raw => {
+    queueHandler.process(ws, user.username, raw);
   });
 });

@@ -1,49 +1,11 @@
-.c-newbie {
-  color: #ababab;
-  font-weight: bold;
-}
+/* https://coolors.co/0081a7-00afb9-fdfcdc-fed9b7-f07167 */
 
-.c-apprentice {
-  color: #ffa500;
-  font-weight: bold;
-}
-
-.c-novice {
-  color: #eeee00;
-  font-weight: bold;
-}
-
-.c-intermediate {
-  color: #00ff00;
-  font-weight: bold;
-}
-
-.c-expert {
-  color: #00cfcf;
-  font-weight: bold;
-}
-
-.c-master {
-  color: #0000ff;
-  font-weight: bold;
-}
-
-.c-wizard {
-  color: #ee82ee;
-  font-weight: bold;
-}
-
-.c-demon {
-  color: #7f055f;
-  font-weight: bold;
-}
-
-.c-orz {
-  color: #ff0000;
-  font-weight: bold;
-}
-
-.c-orz-first-letter {
-  color: black;
-  font-weight: bold;
+:root {
+  --primary-color: #00afb9ff;
+  --secondary-color: #f07167ff;
+  --tertiary-color: #6ca0dc;
+  --background-color: #fdfcdcff;
+  --accent-color: #fed9b7ff;
+  --green: #a7c957;
+  --red: #e63946;
 }

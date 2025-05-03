@@ -1,6 +1,6 @@
-import { make_pair, Pair } from "@common/structs";
 import { cdf } from "./statistics";
 import { Problem } from "./schemas";
+import { GamePartial } from "@util/common";
 
 export class Rating {
   private rating: number;
@@ -24,52 +24,74 @@ export class Rating {
   }
 
   lose(other: number) {
-    return -(Rating.POINT_TOTAL - this.win(other));
+    return Rating.POINT_TOTAL - this.win(other);
   }
 }
 
 export class Game {
-  public players: string[];
-  public ratings: Pair<number, number>;
-  public score: Pair<number, number>;
-  private used: string[];
-  public round: number;
-  public problem: string;
   public answer: string;
+  public players: string[];
+  public problem: string;
+  public ratingChanges: number[];
+  public ratings: number[];
+  public round: number;
+  public score: number[];
+  public used: string[];
 
-  constructor(players: string[], ratings: Pair<number, number>) {
+  constructor(players: string[], ratings: number[]) {
     this.players = players;
     this.ratings = ratings;
-    this.score = make_pair(0, 0);
+
+    const ratingCalc = new Rating(ratings[0]);
+    ratingCalc.win(ratings[1]);
+
+    this.ratingChanges = [ratingCalc.win(ratings[1]), ratingCalc.lose(ratings[1])];
+
+    this.score = [0, 0];
     this.used = [];
     this.round = 1;
     this.problem = "";
     this.answer = "";
   }
 
-  async getQuestion() {
-    const res = (
-      await Problem.find()
-        .skip(Math.floor(Math.random() * 10))
-        .limit(1)
-        .sort({ rating: -1, _id: 1 })
-    )[0];
+  async getProblem() {
+    const matches = await Problem.aggregate([
+      { $match: { _id: { $nin: this.used } } },
+      { $sample: { size: 1 } },
+    ]);
 
-    this.used.push(res.id);
+    const problem = matches[0];
 
-    this.problem = res.latex!;
-    this.answer = res.answer!;
+    if (!problem) return null;
 
-    return res;
+    this.used.push(problem.id);
+
+    this.problem = problem.latex!;
+    this.answer = problem.answer!;
+
+    return problem[0];
   }
 
   winner() {
-    if (this.score.first >= 2) {
+    if (this.score[0] >= 2) {
       return 0;
-    } else if (this.score.second >= 2) {
+    } else if (this.score[1] >= 2) {
       return 1;
     }
 
     return -1;
+  }
+
+  toPartial(player: string): GamePartial {
+    return {
+      player: this.players.indexOf(player),
+      players: this.players,
+      ratings: this.ratings,
+      ratingChanges: this.ratingChanges,
+      score: this.score,
+      round: this.round,
+      problem: this.problem,
+      winner: this.winner(),
+    };
   }
 }

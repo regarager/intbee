@@ -32,22 +32,6 @@
       <b id="result" hidden></b>
     </div>
     <script src="/problem-bundle.js"></script>
-    <script src="https://unpkg.com/mathlive"></script>
-    <script
-      id="MathJax-script"
-      async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-    />
-    <script>
-      MathJax = {
-        tex: {
-          inlineMath: [["$", "$"]],
-          displayMath: [["$$", "$$"]],
-        },
-        svg: {
-          fontCache: "global",
-        },
-      };
-    </script>
+    <%- include("../components/mathjax.ejs") %>
   </div>
 </html>

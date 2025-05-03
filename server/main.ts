@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { file, getRank, log } from "@common/util";
+import { file } from "@util/server";
+import { getRank, log } from "@util/common";
 import path from "path";
 import { authRouter } from "./routes/auth";
 import { gymRouter } from "./routes/gym";
@@ -10,7 +11,6 @@ import { problemRouter } from "./routes/api/problem";
 import cookieParser from "cookie-parser";
 import { rankedRouter } from "./routes/ranked";
 import expressWs from "express-ws";
-import { wsRouter } from "./routes/api/ws";
 import { exit } from "process";
 
 dotenv.config();
@@ -43,7 +43,6 @@ app.use(express.static("public"));
 app.use(authMiddleware);
 
 app.use("/api/auth", authAPIRouter);
-app.use("/api/ws", wsRouter);
 app.use("/api/problem", problemRouter);
 
 app.use("/auth", authRouter);
