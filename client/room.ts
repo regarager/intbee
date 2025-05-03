@@ -1,64 +1,51 @@
-import { make_pair, Pair } from "@util/structs";
-import { Game } from "@server/game";
+import { RankedAction, GamePartial, action, log } from "@util/common";
 
+// need main function to avoid weird conflicts
 function main() {
-  const wsUrl = "ws://localhost:3000/api/ws";
+  const wsUrl = "ws://localhost:3000/ranked/ws/game";
   const socket = new WebSocket(wsUrl);
-  let username = "";
 
   socket.onopen = () => {
-    socket.send(JSON.stringify({ action: "fetch" }));
-    socket.send(JSON.stringify({ action: "getinfo" }));
+    log("Connected WS");
+    socket.send(action(RankedAction.UPDATE, {}));
   };
 
   socket.onmessage = raw => {
     const data = JSON.parse(raw.data + "");
-    const { action } = data;
+    const action: RankedAction = data.action;
 
-    if (action === "info") {
-      username = data.username;
+    log(data);
 
-      updateRatingChanges(data.ratingChanges ?? make_pair(0, 0));
-    } else if (action == "update") {
-      update(data as Game);
+    switch (action) {
+      case RankedAction.UPDATE: {
+        update(data.data as GamePartial);
+        break;
+      }
     }
   };
 
-  function updateRatingChanges(changes: Pair<number, number>) {
-    document.getElementById("rating-win")!.innerText = "+" + changes.first.toString();
-    document.getElementById("rating-lose")!.innerText = changes.second.toString();
+  function updateRatingChanges(player: number, ratingChanges: number[]) {
+    document.getElementById("rating-win")!.innerText = "+" + ratingChanges[player].toString();
+    document.getElementById("rating-lose")!.innerText = "-" + ratingChanges[1 - player].toString();
     document.getElementById("rating-change")!.hidden = false;
   }
 
-  function winner(game: Game) {
-    if (game.score.first === 2) {
-      return 0;
-    } else if (game.score.second == 2) {
-      return 1;
-    }
+  function update(game: GamePartial) {
+    const { player } = game;
 
-    return -1;
-  }
-
-  function update(game: Game) {
+    updateRatingChanges(player, game.ratingChanges);
     document.getElementById("round-display")!.innerText = `Round #${game.round}`;
 
     const score = game.score;
-
-    if (game.players[0] === username) {
-      document.getElementById("pscore1")!.innerText = score.first.toString();
-      document.getElementById("pscore2")!.innerText = score.second.toString();
-    } else {
-      document.getElementById("pscore2")!.innerText = score.first.toString();
-      document.getElementById("pscore1")!.innerText = score.second.toString();
-    }
+    document.getElementById("pscore1")!.innerText = score[player].toString();
+    document.getElementById("pscore2")!.innerText = score[1 - player].toString();
 
     document.getElementById("problem-content")!.innerText = `$$${game.problem} dx $$`;
 
-    if (winner(game) > -1) {
+    if (game.winner > -1) {
       socket.close();
 
-      document.getElementById("winner")!.innerText = `Winner: ${game.players[winner(game)]}!`;
+      document.getElementById("winner")!.innerText = `Winner: ${game.players[game.winner]}!`;
 
       document.getElementById("game-result")!.hidden = false;
     }
@@ -67,7 +54,7 @@ function main() {
   function sendAnswer() {
     const input = document.getElementById("answer-input") as HTMLInputElement;
 
-    socket.send(JSON.stringify({ action: "submit", answer: input.value }));
+    socket.send(action(RankedAction.SUBMIT, { answer: input.value }));
   }
 
   document.getElementById("answer-form")?.addEventListener("submit", e => {

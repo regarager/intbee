@@ -22,11 +22,15 @@ export function clamp(x: number, lower: number = 0, upper: number = Infinity) {
   return Math.max(Math.min(x, upper), lower);
 }
 
-export enum ActionType {
-  FETCH = "fetch",
-  INFO = "info",
-  QUEUE = "queue",
+export enum RankedAction {
   SUBMIT = "submit",
+  UPDATE = "update",
+}
+
+export enum QueueAction {
+  INIT = "init",
+  QUEUE = "queue",
+  REDIRECT = "redirect",
   UPDATE = "update",
 }
 
@@ -46,4 +50,19 @@ export function getRank(r: number) {
 
 export function msg(message: string) {
   return { message };
+}
+
+export interface GamePartial {
+  player: number;
+  players: string[];
+  problem: string;
+  ratingChanges: number[];
+  ratings: number[];
+  round: number;
+  score: number[];
+  winner: number;
+}
+
+export function action(act: any, data: any) {
+  return JSON.stringify({ action: act, data });
 }

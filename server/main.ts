@@ -11,7 +11,6 @@ import { problemRouter } from "./routes/api/problem";
 import cookieParser from "cookie-parser";
 import { rankedRouter } from "./routes/ranked";
 import expressWs from "express-ws";
-import { wsRouter } from "./routes/api/ws";
 import { exit } from "process";
 
 dotenv.config();
@@ -44,7 +43,6 @@ app.use(express.static("public"));
 app.use(authMiddleware);
 
 app.use("/api/auth", authAPIRouter);
-app.use("/api/ws", wsRouter);
 app.use("/api/problem", problemRouter);
 
 app.use("/auth", authRouter);

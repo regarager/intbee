@@ -1,5 +1,6 @@
 import { cdf } from "./statistics";
 import { Problem } from "./schemas";
+import { GamePartial } from "@util/common";
 
 export class Rating {
   private rating: number;
@@ -25,15 +26,6 @@ export class Rating {
   lose(other: number) {
     return Rating.POINT_TOTAL - this.win(other);
   }
-}
-
-export interface GamePartial {
-  players: string[];
-  problem: string;
-  ratingChanges: number[];
-  ratings: number[];
-  round: number;
-  score: number[];
 }
 
 export class Game {
@@ -90,24 +82,16 @@ export class Game {
     return -1;
   }
 
-  toPartial(): GamePartial {
+  toPartial(player: string): GamePartial {
     return {
+      player: this.players.indexOf(player),
       players: this.players,
       ratings: this.ratings,
       ratingChanges: this.ratingChanges,
       score: this.score,
       round: this.round,
       problem: this.problem,
+      winner: this.winner(),
     };
-  }
-
-  static fromPartial(gp: GamePartial): Game {
-    const { players, ratings, score, round, problem } = gp;
-    const game = new Game(players, ratings);
-    game.score = score;
-    game.round = round;
-    game.problem = problem;
-
-    return game;
   }
 }
