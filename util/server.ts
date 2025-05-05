@@ -14,6 +14,7 @@ export function approx(a: number, b: number) {
 
 export interface UserPayload {
   username: string;
+  role: string;
   iat: number;
   eat: number;
 }

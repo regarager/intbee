@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 import { rankedRouter } from "./routes/ranked";
 import expressWs from "express-ws";
 import { exit } from "process";
+import { adminRouter } from "./routes/admin";
 
 dotenv.config();
 
@@ -48,6 +49,8 @@ app.use("/api/problem", problemRouter);
 app.use("/auth", authRouter);
 app.use("/gym", gymRouter);
 app.use("/ranked", rankedRouter);
+
+app.use("/admin", adminRouter);
 
 app.get("/", (_, res) => {
   res.redirect("/gym");
