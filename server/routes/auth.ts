@@ -23,3 +23,9 @@ authRouter.get("/register", (req, res) => {
     res.render(file("/pages/register.ejs"));
   }
 });
+
+authRouter.get("/logout", (_, res) => {
+  res.clearCookie("token");
+
+  res.redirect("/gym");
+});

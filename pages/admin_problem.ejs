@@ -8,18 +8,13 @@
   </head>
   <%- include("../components/header.ejs") %>
   <div class="container">
-    <h1>Problem View</h1>
+    <h1>Problem View - Admin</h1>
     <div class="problem">$$<%= problem.latex %>d<%= problem.variable %>$$</div>
     <div class="problem-info">
       <span id="top">
         <p class="rating">
           <b>Rating:</b> <%- include("../components/rating.ejs", {rating: problem.rating}) %>
         </p>
-        <% if (user && user.role === "admin") { %>
-        <button onclick="window.location.href = '/admin/problem/<%= problem.id %>';">
-          Edit Problem
-        </button>
-        <% } %>
       </span>
 
       <div class="tags">
@@ -37,6 +32,7 @@
         <math-field id="answer-input"></math-field>
         <button type="submit" id="submit-btn">Submit</button>
       </form>
+      <p><b>ID:</b> <%= problem.id %></p>
       <b id="result" hidden></b>
     </div>
     <script src="/problem-bundle.js"></script>

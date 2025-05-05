@@ -12,7 +12,7 @@ const JWT_SECRET: string = process.env.JWT_SECRET ?? "";
 
 export const authAPIRouter = express.Router();
 
-export const authMiddleware = async (req: Request, _: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token ?? "";
 
   jwt.verify(
@@ -29,6 +29,8 @@ export const authMiddleware = async (req: Request, _: Response, next: NextFuncti
         req.user.role = dbUser ? dbUser.role : "user";
       }
 
+      res.locals.user = req.user;
+
       next();
     },
   );
@@ -36,7 +38,7 @@ export const authMiddleware = async (req: Request, _: Response, next: NextFuncti
 
 export const authOnly = (req: Request, res: Response, next: NextFunction) => {
   if (req.user) {
-    log(`User ${req.user.username} accessed ${req.url}`);
+    log(`User ${req.user.username} accessed ${req.originalUrl}`);
     next();
   } else {
     log(`Unauthenticated request to ${req.url}`);
@@ -46,7 +48,7 @@ export const authOnly = (req: Request, res: Response, next: NextFunction) => {
 
 export const moderatorOnly = (req: Request, res: Response, next: NextFunction) => {
   if (req.user && (req.user.role === "admin" || req.user.role === "moderator")) {
-    log(`${req.user.role} ${req.user.username} accessed ${req.url}`);
+    log(`${req.user.role} ${req.user.username} accessed ${req.originalUrl}`);
     next();
   } else {
     log(`Unauthenticated request to ${req.url} (moderator protected)`);
@@ -56,7 +58,7 @@ export const moderatorOnly = (req: Request, res: Response, next: NextFunction) =
 
 export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
   if (req.user && req.user.role === "admin") {
-    log(`${req.user.role} ${req.user.username} accessed ${req.url}`);
+    log(`${req.user.role} ${req.user.username} accessed ${req.originalUrl}`);
     next();
   } else {
     log(`Unauthenticated request to ${req.url} (admin protected)`);

@@ -40,9 +40,3 @@
   margin-top: 1em;
   margin-left: auto;
 }
-
-a {
-  color: var(--tertiary-color);
-  text-decoration: none;
-  font-weight: bold;
-}

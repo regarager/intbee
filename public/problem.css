@@ -38,3 +38,17 @@
 .incorrect {
   color: var(--red);
 }
+
+#top {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+
+#top button {
+  margin-left: auto;
+  margin-right: 1em;
+  height: 3em;
+}
