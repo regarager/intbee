@@ -2,11 +2,31 @@ import express from "express";
 import { adminOnly } from "./api/auth";
 import { file } from "@util/server";
 import { Problem } from "@server/schemas";
+import { log, msg, ProblemPartial } from "@util/common";
 
 export const adminRouter = express.Router();
 
 adminRouter.get("/", adminOnly, (_, res) => {
   res.render(file("pages/home_admin.ejs"));
+});
+
+adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
+  const id = req.params.id ?? "";
+
+  const problem = await Problem.findById(id);
+
+  if (problem === null) {
+    res.status(400);
+  } else {
+    const data = req.body as ProblemPartial;
+
+    log(`Updating problem ${id}`);
+    log(data);
+
+    await problem.updateOne(data);
+
+    res.send(msg("Success!"));
+  }
 });
 
 adminRouter.get("/problem/:id", adminOnly, async (req, res) => {

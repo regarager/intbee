@@ -24,6 +24,20 @@ document.getElementById("editor")!.addEventListener("input", e => {
   }
 });
 
+document.getElementById("editor")!.addEventListener("submit", e => {
+  e.preventDefault();
+
+  fetch(window.location.href, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(problem),
+  })
+    .then(() => alert("Updated!"))
+    .catch(() => alert("An error occurred"));
+});
+
 function getInput(name: string) {
   return document.getElementsByName(name)[0] as HTMLInputElement;
 }
