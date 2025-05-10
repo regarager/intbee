@@ -6,6 +6,7 @@ import { getRank, log } from "@util/common";
 import path from "path";
 import { authRouter } from "./routes/auth";
 import { gymRouter } from "./routes/gym";
+import { wikiRouter } from "./routes/wiki";
 import { authAPIRouter, authMiddleware } from "./routes/api/auth";
 import { problemRouter } from "./routes/api/problem";
 import cookieParser from "cookie-parser";
@@ -49,6 +50,7 @@ app.use("/api/problem", problemRouter);
 app.use("/auth", authRouter);
 app.use("/gym", gymRouter);
 app.use("/ranked", rankedRouter);
+app.use("/wiki", wikiRouter);
 
 app.use("/admin", adminRouter);
 
