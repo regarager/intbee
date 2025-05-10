@@ -13,13 +13,27 @@ adminRouter.get("/", adminOnly, (_, res) => {
 adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
   const id = req.params.id ?? "";
 
+  const data = req.body as ProblemPartial;
+
+  if (id === "new") {
+    if (!data) {
+      res.status(400);
+      return;
+    }
+
+    // TODO: allow integration with different variables
+    await Problem.create({
+      ...req.body,
+      variable: "x",
+    });
+    res.send(msg("Success!"));
+  }
+
   const problem = await Problem.findById(id);
 
   if (problem === null) {
     res.status(400);
   } else {
-    const data = req.body as ProblemPartial;
-
     log(`Updating problem ${id}`);
     log(data);
 
@@ -27,6 +41,11 @@ adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
 
     res.send(msg("Success!"));
   }
+});
+
+adminRouter.get("/problem/new", adminOnly, async (_, res) => {
+  const problem = { latex: "", answer: "", rating: 0, tags: [], variable: "x" };
+  res.render(file("pages/problem_admin.ejs"), { problem });
 });
 
 adminRouter.get("/problem/:id", adminOnly, async (req, res) => {
