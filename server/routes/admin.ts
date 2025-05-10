@@ -6,7 +6,7 @@ import { Problem } from "@server/schemas";
 export const adminRouter = express.Router();
 
 adminRouter.get("/", adminOnly, (_, res) => {
-  res.render(file("pages/admin_home.ejs"));
+  res.render(file("pages/home_admin.ejs"));
 });
 
 adminRouter.get("/problem/:id", adminOnly, async (req, res) => {
@@ -17,6 +17,6 @@ adminRouter.get("/problem/:id", adminOnly, async (req, res) => {
   if (problem == null) {
     res.redirect("/error");
   } else {
-    res.render(file("pages/admin_problem.ejs"), { problem });
+    res.render(file("pages/problem_admin.ejs"), { problem });
   }
 });
