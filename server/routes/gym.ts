@@ -20,7 +20,7 @@ gymRouter.get("/:page", async (req, res) => {
   const size = 40;
 
   const problems = await Problem.find()
-    .skip((page - 1) * size)
+    .skip(Math.max(0, (page - 1) * size))
     .limit(size)
     .sort({ rating: -1, _id: 1 });
 

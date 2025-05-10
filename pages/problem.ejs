@@ -11,9 +11,17 @@
     <h1>Problem View</h1>
     <div class="problem">$$<%= problem.latex %>d<%= problem.variable %>$$</div>
     <div class="problem-info">
-      <p class="rating">
-        <b>Rating:</b> <%- include("../components/rating.ejs", {rating: problem.rating}) %>
-      </p>
+      <span id="top">
+        <p class="rating">
+          <b>Rating:</b> <%- include("../components/rating.ejs", {rating: problem.rating}) %>
+        </p>
+        <% if (user && user.role === "admin") { %>
+        <button onclick="window.location.href = '/admin/problem/<%= problem.id %>';">
+          Edit Problem
+        </button>
+        <% } %>
+      </span>
+
       <div class="tags">
         <b>Tags: &ThinSpace;</b>
         <% for (const tag of problem.tags) { %>

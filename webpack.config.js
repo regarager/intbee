@@ -8,6 +8,7 @@ module.exports = {
     room: "./client/room.ts",
     register: "./client/register.ts",
     problem: "./client/problem.ts",
+    problem_admin: "./client/problem_admin.ts",
     queue: "./client/queue.ts",
   },
   output: {

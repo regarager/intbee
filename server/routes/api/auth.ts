@@ -12,29 +12,57 @@ const JWT_SECRET: string = process.env.JWT_SECRET ?? "";
 
 export const authAPIRouter = express.Router();
 
-export const authMiddleware = (req: Request, _: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token ?? "";
 
   jwt.verify(
     token,
     JWT_SECRET,
-    (_: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
+    async (_: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
       if (decoded) {
         req.user = decoded as UserPayload;
+
+        const { username } = req.user;
+
+        const dbUser = await User.findOne({ username });
+
+        req.user.role = dbUser ? dbUser.role : "user";
       }
+
+      res.locals.user = req.user;
+
+      next();
     },
   );
-
-  next();
 };
 
 export const authOnly = (req: Request, res: Response, next: NextFunction) => {
-  if (!req.user) {
+  if (req.user) {
+    log(`User ${req.user.username} accessed ${req.originalUrl}`);
+    next();
+  } else {
     log(`Unauthenticated request to ${req.url}`);
     res.redirect("/auth/login");
-  } else {
-    log(`User ${req.user.username} accessed ${req.url}`);
+  }
+};
+
+export const moderatorOnly = (req: Request, res: Response, next: NextFunction) => {
+  if (req.user && (req.user.role === "admin" || req.user.role === "moderator")) {
+    log(`${req.user.role} ${req.user.username} accessed ${req.originalUrl}`);
     next();
+  } else {
+    log(`Unauthenticated request to ${req.url} (moderator protected)`);
+    res.redirect("/");
+  }
+};
+
+export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
+  if (req.user && req.user.role === "admin") {
+    log(`${req.user.role} ${req.user.username} accessed ${req.originalUrl}`);
+    next();
+  } else {
+    log(`Unauthenticated request to ${req.url} (admin protected)`);
+    res.redirect("/");
   }
 };
 

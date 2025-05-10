@@ -42,3 +42,9 @@ math-field {
   min-height: 2em;
   border-radius: 8px;
 }
+
+a {
+  color: var(--tertiary-color);
+  text-decoration: none;
+  font-weight: bold;
+}

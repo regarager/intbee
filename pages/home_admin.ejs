@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration Bee - Admin</title>
+    <%- include("../components/styles") %>
+    <link rel="stylesheet" type="text/css" href="/admin.css" />
+  </head>
+  <%- include("../components/header.ejs") %>
+  <div class="container">
+    <h1>Admin</h1>
+    <ul>
+      <li>
+        <a href="/admin_gym">Gym</a>
+      </li>
+      <li>
+        <a href="/admin/problem/new">Create new problem</a>
+      </li>
+      <li>
+        <a href="/admin_users">Users</a>
+      </li>
+    </ul>
+  </div>
+  <%- include("../components/mathjax.ejs") %>
+</html>

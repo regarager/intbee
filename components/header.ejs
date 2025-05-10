@@ -4,10 +4,19 @@
   <a href="/gym">Gym</a>
   <a href="/ranked">Ranked</a>
   <a href="/wiki">Wiki</a>
+  <% if (user && user.role === "admin") { %>
+  <a href="/admin">Admin</a>
+  <% } %>
   <span style="margin-left: auto">
+    <% if (user) { %>
+    <a href="/auth/logout" class="logo">
+      <img src="/exit.svg" alt="Exit" height="32px" />
+    </a>
+    <% } else { %>
     <a href="/auth/login" class="logo">
       <img src="/user.svg" alt="Login" height="32px" />
     </a>
+    <% } %>
     <a href="https://github.com/regarager/intbee" class="logo">
       <img src="/github-mark-white.svg" alt="Github" height="32px" />
     </a>

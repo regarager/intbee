@@ -63,6 +63,13 @@ export interface GamePartial {
   winner: number;
 }
 
+export interface ProblemPartial {
+  latex: string;
+  answer: string;
+  rating: number;
+  tags: string[];
+}
+
 export function action(act: any, data: any) {
   return JSON.stringify({ action: act, data });
 }
