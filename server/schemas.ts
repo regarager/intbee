@@ -26,3 +26,11 @@ export const Problem = mongoose.model(
     tags: [String],
   }),
 );
+
+export const Tag = mongoose.model(
+  "Tag",
+  new Schema({
+    content: String,
+    tag: String,
+  }),
+);

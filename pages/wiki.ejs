@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration Bee - Wiki</title>
+    <%- include("../components/styles") %>
+    <link rel="stylesheet" type="text/css" href="/wiki.css" />
+  </head>
+  <%- include("../components/header.ejs") %>
+  <div class="container">
+    <h1>Wiki</h1>
+    <div id="wiki-grid">
+      <% for (const tag of tags) { %>
+      <div class="tag-container">
+        <p class="tag"><%= tag.tag %></p>
+        <div class="popup-overlay">
+          <div class="popup">
+            <p class="content">
+              <b><%= tag.tag %>:</b>
+              <%= tag.content %>
+            </p>
+            <div class="examples">
+              <b>Examples:</b>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  <script
+    id="MathJax-script"
+    async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  />
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [["$", "$"]],
+        displayMath: [["$$", "$$"]],
+      },
+      svg: {
+        fontCache: "global",
+      },
+    };
+  </script>
+</html>

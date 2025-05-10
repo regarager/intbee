@@ -1,0 +1,36 @@
+#problem-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(auto-fill);
+  grid-row-gap: 1.5em;
+  grid-column-gap: 1.5em;
+}
+
+.problem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 1em;
+  border: 2px solid black;
+  padding: 1em;
+}
+
+.latex-container {
+  display: flex;
+  height: 6em;
+  text-decoration: none;
+  color: inherit;
+}
+
+.latex {
+  align-self: flex-end;
+  transition: font-size;
+}
+
+.problem-info {
+  align-self: flex-start;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
