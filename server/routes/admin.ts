@@ -15,6 +15,9 @@ adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
 
   const data = req.body as ProblemPartial;
 
+  if (!data.tags) return;
+  data.tags = data.tags.sort();
+
   if (id === "new") {
     if (!data) {
       res.status(400);

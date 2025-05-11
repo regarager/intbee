@@ -34,6 +34,19 @@ export enum QueueAction {
   UPDATE = "update",
 }
 
+export enum TagType {
+  BETA = "beta",
+  FEYNMAN = "feynman",
+  GAMMA = "gamma",
+  GEOMETRY = "geometry",
+  IBP = "ibp",
+  IMPROPER = "improper",
+  PARFRACS = "parfracs",
+  SERIES = "series",
+  SUBSTITUTION = "substitution",
+  TRIG = "trig",
+}
+
 export function getRank(r: number) {
   return [
     "newbie",
