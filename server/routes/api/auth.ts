@@ -68,7 +68,7 @@ export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
 
 authAPIRouter.post("/login", async (req, res) => {
   if (!req.body) {
-    res.status(400).send({ message: "Authentication failure" });
+    res.send(`<span style="color: red;">Invalid body</span>`);
     return;
   }
 
@@ -77,7 +77,7 @@ authAPIRouter.post("/login", async (req, res) => {
 
   if (!username || !password) {
     log("Failed attempt to log in, missing username or password");
-    res.status(400).send({ message: "Authentication failure" });
+    res.send(`<span style="color: red;">Failed login</span>`);
     return;
   }
 
@@ -95,7 +95,7 @@ authAPIRouter.post("/login", async (req, res) => {
       .send({ message: "Successfully authenticated!", token });
   } else {
     log(`Unsuccessful authentication for user ${username}`);
-    res.status(407).send({ message: "Authentication failure" });
+    res.send(`<span style="color: red;">Failed login</span>`);
   }
 });
 
