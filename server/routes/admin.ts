@@ -38,7 +38,6 @@ adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
     res.status(400);
   } else {
     log(`Updating problem ${id}`);
-    log(data);
 
     await problem.updateOne(data);
 

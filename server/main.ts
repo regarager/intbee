@@ -31,7 +31,7 @@ if (!process.env.JWT_SECRET) {
 
 const app = expressWs(express()).app;
 
-app.set("views", path.join(__dirname, "pages"));
+app.set("views", path.join(process.cwd(), "pages"));
 app.set("view engine", "ejs");
 
 app.locals.getRank = getRank;
