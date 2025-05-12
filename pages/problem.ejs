@@ -54,6 +54,11 @@
       </form>
       <b id="result"></b>
     </div>
+    <script>
+      document.addEventListener("htmx:afterSwap", function (evt) {
+        MathJax.typesetPromise();
+      });
+    </script>
     <%- include("../components/mathjax.ejs") %>
   </div>
 </html>
