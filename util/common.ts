@@ -83,6 +83,11 @@ export interface ProblemPartial {
   tags: string[];
 }
 
+export interface TagPartial {
+  content: string;
+  tag: TagType;
+}
+
 export function action(act: any, data: any) {
   return JSON.stringify({ action: act, data });
 }
