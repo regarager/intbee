@@ -4,13 +4,9 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    login: "./client/login.ts",
-    room: "./client/room.ts",
-    register: "./client/register.ts",
-    problem: "./client/problem.ts",
-    problem_admin: "./client/problem_admin.ts",
-    wiki_admin: "./client/wiki_admin.ts",
     queue: "./client/queue.ts",
+    room: "./client/room.ts",
+    wiki_admin: "./client/wiki_admin.ts",
   },
   output: {
     path: path.resolve(__dirname, "./dist"),

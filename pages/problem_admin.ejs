@@ -14,12 +14,17 @@
         <div class="problem">$$<%= problem.latex %>d<%= problem.variable %>$$</div>
       </span>
       <span id="right">
-        <form class="problem-info" id="editor">
+        <form
+          id="editor"
+          class="problem-info"
+          hx-post="/admin/problem/<%= problem.id %>"
+          hx-indicator="#submit-btn"
+        >
           <label for="integral"><b>Integral:</b></label>
           <math-field name="integral" value="<%= problem.latex %>"></math-field>
           <p class="note">Do not include the dx</p>
           <label for="rating"><b>Rating:</b></label>
-          <input type="number" value=<%= problem.rating %> name="rating" />
+          <input type="number" value="<%= problem.rating %>" name="rating" />
           <label><b>Tags: &ThinSpace;</b></label>
           <input name="tags" type="text" value="<%= problem.tags.join(',') %>" />
           <label for="answer"><b>Solution:</b></label>
@@ -27,14 +32,13 @@
           <button type="submit" id="submit-btn">Update</button>
           <p><b>ID:</b> <%= problem.id %></p>
         </form>
+      </span>
     </div>
   </div>
-  <script src="/problem_admin-bundle.js"></script>
   <%- include("../components/mathjax.ejs") %>
   <script>
     setInterval(() => {
       MathJax.typesetPromise();
     }, 1000);
   </script>
-  </div>
 </html>

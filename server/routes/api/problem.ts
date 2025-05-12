@@ -5,7 +5,20 @@ import { approx, compute } from "@util/server";
 
 export const problemRouter = express.Router();
 
+problemRouter.get("/:id/solution", async (req, res) => {
+  const id = req.params.id ?? "";
+
+  const problem = await Problem.findById(id);
+
+  if (!problem) {
+    res.send("problem not found");
+  } else {
+    res.send(`$$${problem.latex}$$`);
+  }
+});
+
 problemRouter.post("/:id/verify", async (req, res) => {
+  log(req.body);
   const id = req.params.id ?? "";
 
   const problem = await Problem.findById(id);
@@ -31,6 +44,10 @@ problemRouter.post("/:id/verify", async (req, res) => {
     // compute working
     // TODO: rewrite all of the answers
 
-    res.send({ result });
+    if (result) {
+      res.send(`<p class="correct">Verdict: correct!</p>`);
+    } else {
+      res.send(`<p class="incorrect">Verdict: incorrect</p>`);
+    }
   }
 });

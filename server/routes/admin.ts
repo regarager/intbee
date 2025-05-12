@@ -13,7 +13,7 @@ adminRouter.get("/", adminOnly, (_, res) => {
 adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
   const id = req.params.id ?? "";
 
-  const data = req.body as ProblemPartial;
+  const data = { ...req.body, tags: req.body.tags.replaceAll(" ", "").split(",") };
 
   if (!data.tags) return;
   data.tags = data.tags.sort();
@@ -41,7 +41,7 @@ adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
     }
   }
 
-  res.send(msg("Success!"));
+  res.set("HX-Redirect", "/gym").send("OK");
 });
 
 adminRouter.get("/problem/new", adminOnly, async (_, res) => {
