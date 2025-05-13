@@ -1,3 +1,4 @@
+import { TagType } from "@util/common";
 import mongoose, { Schema } from "mongoose";
 
 export const User = mongoose.model(
@@ -31,6 +32,9 @@ export const Tag = mongoose.model(
   "Tag",
   new Schema({
     content: String,
-    tag: String,
+    tag: {
+      type: String,
+      enum: Object.values(TagType),
+    },
   }),
 );

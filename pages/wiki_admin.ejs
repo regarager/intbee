@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration Bee - Wiki</title>
+    <%- include("../components/styles") %>
+    <link rel="stylesheet" type="text/css" href="/wiki_admin.css" />
+  </head>
+  <%- include("../components/header.ejs") %>
+  <div class="container">
+    <span id="top">
+      <h1>Wiki - <%= tag %></h1>
+      <button id="save-btn">Save</button>
+    </span>
+    <div id="split">
+      <div id="left">
+        <textarea id="editor" rows="30" cols="80" data-tag="<%= tag %>"></textarea>
+      </div>
+      <div id="right">
+        <span id="output"></span>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const raw = String.raw`<%- content %>`;
+    document.getElementById("editor").value = raw;
+
+    document.getElementById("output").innerHTML = marked.parse(raw);
+
+    setInterval(() => {
+      document.getElementById("output").innerHTML = marked.parse(
+        document.getElementById("editor").value,
+      );
+      MathJax.typesetPromise();
+    }, 1000);
+  </script>
+  <script src="/wiki_admin-bundle.js"></script>
+  <%- include("../components/mathjax.ejs") %>
+</html>

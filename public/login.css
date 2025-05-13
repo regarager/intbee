@@ -37,6 +37,15 @@
 }
 
 #form-footer {
-  margin-top: 1em;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+}
+
+#submit-btn {
   margin-left: auto;
+}
+
+#result {
+  align-self: flex-start;
 }

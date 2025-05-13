@@ -68,7 +68,7 @@ export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
 
 authAPIRouter.post("/login", async (req, res) => {
   if (!req.body) {
-    res.status(400).send({ message: "Authentication failure" });
+    res.send(`<span style="color: red;">Failed login</span>`);
     return;
   }
 
@@ -77,7 +77,7 @@ authAPIRouter.post("/login", async (req, res) => {
 
   if (!username || !password) {
     log("Failed attempt to log in, missing username or password");
-    res.status(400).send({ message: "Authentication failure" });
+    res.send(`<span style="color: red;">Failed login</span>`);
     return;
   }
 
@@ -90,12 +90,12 @@ authAPIRouter.post("/login", async (req, res) => {
 
     log(`User ${username} logged in`);
     res
-      .status(200)
       .cookie("token", token, { maxAge: 86400 * 1000 })
-      .send({ message: "Successfully authenticated!", token });
+      .set("HX-Redirect", "/gym")
+      .send("OK");
   } else {
     log(`Unsuccessful authentication for user ${username}`);
-    res.status(407).send({ message: "Authentication failure" });
+    res.send(`<span style="color: red;">Failed login</span>`);
   }
 });
 
@@ -111,17 +111,17 @@ authAPIRouter.post("/register", async (req, res) => {
 
   if (!username || !password || !email) {
     log("Failed attempt to log in, missing username, email, or password");
-    res.status(400).send({ message: "Authentication failure" });
+    res.send(`<span style="color: red;">Failed sign up</span>`);
     return;
   }
 
   if (await User.exists({ username })) {
     log(`Failed authentication: Account with username ${username} already exists`);
-    res.status(409).send({ error: `Account with username ${username} already exists` });
+    res.send(`<span style="color: red;">Username already taken</span>`);
     return;
   } else if (await User.exists({ email })) {
     log(`Failed authentication: Account with email ${email} already exists`);
-    res.status(409).send({ error: `Account with email ${email} already exists` });
+    res.send(`<span style="color: red;">Account ${email} already exists</span>`);
     return;
   }
 
@@ -131,8 +131,9 @@ authAPIRouter.post("/register", async (req, res) => {
   await user.save();
 
   const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "24h" });
+
   res
-    .status(200)
     .cookie("token", token, { maxAge: 86400 * 1000 })
-    .send({ message: "Successfully authenticated!", token });
+    .set("HX-Redirect", "/gym")
+    .send("OK");
 });
