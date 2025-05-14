@@ -14,6 +14,7 @@ import { rankedRouter } from "./routes/ranked";
 import expressWs from "express-ws";
 import { exit } from "process";
 import { adminRouter } from "./routes/admin";
+import { loggingMiddleware } from "./logging";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use(express.static("dist"));
 app.use(express.static("public"));
 
 app.use(authMiddleware);
+app.use(loggingMiddleware);
 
 app.use("/api/auth", authAPIRouter);
 app.use("/api/problem", problemRouter);

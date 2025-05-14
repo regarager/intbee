@@ -76,7 +76,8 @@ adminRouter.get("/wiki/:id", async (req, res) => {
   if (tag == null) {
     res.redirect("/error");
   } else {
-    res.render(file("pages/wiki_admin.ejs"), { tag: tag.tag, content: tag.content });
+    const content = tag.content!.replace(/\\/g, "\\\\");
+    res.render(file("pages/wiki_admin.ejs"), { tag: tag.tag, content });
   }
 });
 
@@ -96,6 +97,8 @@ adminRouter.post("/wiki/", async (req, res) => {
   } else {
     await Tag.findOne({ tag: data.tag }).updateOne({ content: data.content });
   }
+
+  log(`Updated tag ${data.tag}`);
 
   res.send("OK");
 });

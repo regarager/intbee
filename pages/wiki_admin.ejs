@@ -24,16 +24,15 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const raw = String.raw`<%- content %>`;
-    document.getElementById("editor").value = raw;
-
+    document.getElementById("editor").value;
     document.getElementById("output").innerHTML = marked.parse(raw);
 
-    setInterval(() => {
+    document.getElementById("editor").addEventListener("input", e => {
       document.getElementById("output").innerHTML = marked.parse(
-        document.getElementById("editor").value,
+        e.target.value.replaceAll("\\", "\\\\"),
       );
       MathJax.typesetPromise();
-    }, 1000);
+    });
   </script>
   <script src="/wiki_admin-bundle.js"></script>
   <%- include("../components/mathjax.ejs") %>
