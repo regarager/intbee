@@ -70,6 +70,17 @@ export interface ProblemPartial {
   tags: string[];
 }
 
+export interface LBParticipant {
+  id: number;
+  name: string;
+  attempts: number[];
+}
+
+export interface LBPartial {
+  score_values: number[];
+  participants: LBParticipant[];
+}
+
 export function action(act: any, data: any) {
   return JSON.stringify({ action: act, data });
 }
