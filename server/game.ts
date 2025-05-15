@@ -1,6 +1,7 @@
 import { cdf } from "./statistics";
 import { Problem } from "./schemas";
-import { GamePartial } from "@util/common";
+import { GamePartial, RANKED_TIMER } from "@util/common";
+import { DateTime } from "luxon";
 
 export class Rating {
   private rating: number;
@@ -29,14 +30,15 @@ export class Rating {
 }
 
 export class Game {
-  public answer: string;
-  public players: string[];
-  public problem: string;
-  public ratingChanges: number[];
-  public ratings: number[];
-  public round: number;
-  public score: number[];
-  public used: string[];
+  answer: string;
+  players: string[];
+  problem: string;
+  ratingChanges: number[];
+  ratings: number[];
+  round: number;
+  score: number[];
+  used: string[];
+  roundEndTime: number;
 
   constructor(players: string[], ratings: number[]) {
     this.players = players;
@@ -52,6 +54,11 @@ export class Game {
     this.round = 1;
     this.problem = "";
     this.answer = "";
+    this.roundEndTime = DateTime.now().plus({ seconds: RANKED_TIMER }).toMillis();
+  }
+
+  startTimer() {
+    this.roundEndTime = DateTime.now().plus({ minutes: 2 }).toMillis();
   }
 
   async getProblem() {
@@ -68,6 +75,8 @@ export class Game {
 
     this.problem = problem.latex!;
     this.answer = problem.answer!;
+
+    this.startTimer();
 
     return problem[0];
   }
@@ -92,6 +101,7 @@ export class Game {
       round: this.round,
       problem: this.problem,
       winner: this.winner(),
+      roundEndTime: this.roundEndTime,
     };
   }
 }

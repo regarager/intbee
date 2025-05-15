@@ -74,6 +74,7 @@ export interface GamePartial {
   round: number;
   score: number[];
   winner: number;
+  roundEndTime: number;
 }
 
 export interface ProblemPartial {
@@ -91,3 +92,5 @@ export interface TagPartial {
 export function action(act: any, data: any) {
   return JSON.stringify({ action: act, data });
 }
+
+export const RANKED_TIMER = 120;

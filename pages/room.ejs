@@ -9,10 +9,11 @@
   <%- include("../components/header.ejs") %>
   <div class="container">
     <div class="top">
-      <div class="progress-container">
-        <div id="progress-bar"></div>
-      </div>
-      <span style="margin-left: 0.5em">
+        <div class="progress-container">
+          <div id="progress-bar"></div>
+        </div>
+        <p><b id="timer">0:00</b> remaining</p>
+      <span>
         <div id="player-ratings">
           <span>
             <%- include("../components/rating.ejs", {text: player.username, rating: player.rating})
@@ -40,7 +41,7 @@
     </div>
     <div class="footer">
       <div class="score-display">
-        <p>
+        <pa
           <b>Score:</b>
           <span class="score">
             <span id="pscore1"><%= game.score.first %></span>

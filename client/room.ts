@@ -1,9 +1,11 @@
-import { RankedAction, GamePartial, action, log } from "@util/common";
+import { RankedAction, GamePartial, action, log, RANKED_TIMER } from "@util/common";
+import { DateTime } from "luxon";
 
 // need main function to avoid weird conflicts
 function main() {
   const wsUrl = "ws://localhost:3000/ranked/ws/game";
   const socket = new WebSocket(wsUrl);
+  let timerHandle: NodeJS.Timeout;
 
   socket.onopen = () => {
     log("Connected WS");
@@ -41,6 +43,20 @@ function main() {
     document.getElementById("pscore2")!.innerText = score[1 - player].toString();
 
     document.getElementById("problem-content")!.innerText = `$$${game.problem} dx $$`;
+
+    const progressBar = document.querySelector("#progress-bar") as HTMLSpanElement;
+    const timer = document.querySelector("#timer") as HTMLElement;
+
+    timerHandle = setInterval(() => {
+      const curr = DateTime.now().toMillis();
+      const delta = curr - game.roundEndTime + RANKED_TIMER * 1000;
+      const completion = delta / (RANKED_TIMER * 1000);
+
+      progressBar.style.width = `${Math.min(completion * 100, 100)}%`;
+
+      const remaining = Math.max(Math.ceil((RANKED_TIMER * 1000 - delta) / 1000), 0);
+      timer.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, "0")}`;
+    }, 50);
 
     if (game.winner > -1) {
       socket.close();
