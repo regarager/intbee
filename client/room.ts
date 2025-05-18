@@ -6,7 +6,7 @@ function main() {
   const socket = new WebSocket(wsUrl);
   let timerHandle: NodeJS.Timeout;
 
-  let lastRound = 0;
+  const lastRound = 0;
 
   socket.onopen = () => {
     log("Connected WS");
