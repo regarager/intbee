@@ -94,3 +94,4 @@ export function action(act: any, data: any) {
 }
 
 export const RANKED_TIMER = 120;
+export const RANKED_MAX_ROUNDS = 5;

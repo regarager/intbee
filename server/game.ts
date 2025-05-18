@@ -51,7 +51,7 @@ export class Game {
 
     this.score = [0, 0];
     this.used = [];
-    this.round = 1;
+    this.round = 0;
     this.problem = "";
     this.answer = "";
     this.roundEndTime = DateTime.now().plus({ seconds: RANKED_TIMER }).toMillis();
@@ -75,6 +75,8 @@ export class Game {
 
     this.problem = problem.latex!;
     this.answer = problem.answer!;
+
+    this.round++;
 
     this.startTimer();
 

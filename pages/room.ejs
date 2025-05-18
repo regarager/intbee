@@ -8,6 +8,8 @@
   </head>
   <%- include("../components/header.ejs") %>
   <div class="container">
+    <% const p = player.username === game.players[0] ? 0 : 1; %>
+    <% console.log(p) %>
     <div class="top">
         <div class="progress-container">
           <div id="progress-bar"></div>
@@ -21,9 +23,9 @@
             opponent.username, rating: opponent.rating}) %> (<%= opponent.rating %>)
           </span>
         </div>
-        <div id="rating-change" hidden>
-          <b>Win: <span id="rating-win"></span></b>
-          <b>Lose: <span id="rating-lose"></span></b>
+        <div id="rating-change">
+          <b>Win: <span id="rating-win">+<%= game.ratingChanges[p] %></span></b>
+          <b>Lose: <span id="rating-lose">-<%= game.ratingChanges[1 - p] %></span></b>
         </div>
       </span>
     </div>

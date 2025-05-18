@@ -53,7 +53,6 @@
 }
 
 #progress-bar {
-  width: 50vw;
   background-color: green;
   height: 1em;
 }

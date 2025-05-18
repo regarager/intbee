@@ -26,16 +26,9 @@ function main() {
     }
   };
 
-  function updateRatingChanges(player: number, ratingChanges: number[]) {
-    document.getElementById("rating-win")!.innerText = "+" + ratingChanges[player].toString();
-    document.getElementById("rating-lose")!.innerText = "-" + ratingChanges[1 - player].toString();
-    document.getElementById("rating-change")!.hidden = false;
-  }
-
   function update(game: GamePartial) {
     const { player } = game;
 
-    updateRatingChanges(player, game.ratingChanges);
     document.getElementById("round-display")!.innerText = `Round #${game.round}`;
 
     const score = game.score;

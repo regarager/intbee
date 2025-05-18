@@ -5,17 +5,20 @@ import { User } from "@server/schemas";
 import { approx, compute, uid } from "@util/server";
 import { WSHandler } from "./wshandler";
 import { WebSocket } from "ws";
+import { DateTime } from "luxon";
 
 const log = WSHandler.log;
 
 export class RankedHandler extends WSHandler {
   public games: Map<string, Game>; // game id to game state
   public users: Map<string, string>; // username to game id
+  private timers: Map<string, NodeJS.Timeout>;
 
   constructor() {
     super();
     this.games = new Map<string, Game>();
     this.users = new Map<string, string>();
+    this.timers = new Map<string, NodeJS.Timeout>();
   }
 
   async process(ws: WebSocket, username: string, raw: any) {
@@ -50,6 +53,11 @@ export class RankedHandler extends WSHandler {
   }
 
   async submit(ws: WebSocket, username: string, data: any, game: Game, gameId: string) {
+    if (DateTime.now().toMillis() > game.roundEndTime) {
+      log(`Submission from ${username} after time expired`);
+      return;
+    }
+
     const answer = compute(data.answer);
     log(`Submission from ${username} in game ${gameId}: ${data.answer} (${answer})`);
 
