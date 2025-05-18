@@ -1,11 +1,12 @@
 import { RankedAction, GamePartial, action, log, RANKED_TIMER } from "@util/common";
 import { DateTime } from "luxon";
 
-// need main function to avoid weird conflicts
 function main() {
   const wsUrl = "ws://localhost:3000/ranked/ws/game";
   const socket = new WebSocket(wsUrl);
   let timerHandle: NodeJS.Timeout;
+
+  let lastRound = 0;
 
   socket.onopen = () => {
     log("Connected WS");
@@ -35,10 +36,17 @@ function main() {
     document.getElementById("pscore1")!.innerText = score[player].toString();
     document.getElementById("pscore2")!.innerText = score[1 - player].toString();
 
-    document.getElementById("problem-content")!.innerText = `$$${game.problem} dx $$`;
+    // stop rerender after game complete
+    if (game.winner === -2) {
+      document.getElementById("problem-content")!.innerText = `$$${game.problem} \\mathop{dx} $$`;
+    }
 
     const progressBar = document.querySelector("#progress-bar") as HTMLSpanElement;
     const timer = document.querySelector("#timer") as HTMLElement;
+
+    if (game.round > lastRound) {
+      clearInterval(timerHandle);
+    }
 
     timerHandle = setInterval(() => {
       const curr = DateTime.now().toMillis();
@@ -51,7 +59,7 @@ function main() {
       timer.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, "0")}`;
     }, 50);
 
-    if (game.winner > -1) {
+    if (game.winner > -2) {
       socket.close();
 
       document.getElementById("winner")!.innerText = `Winner: ${game.players[game.winner]}!`;

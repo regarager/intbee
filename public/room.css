@@ -66,3 +66,10 @@
 #round-display {
   margin-left: 1em;
 }
+
+.circle {
+  width: 2em;
+  height: 2em;
+  border-radius: 2em;
+  border: 2px solid black;
+}

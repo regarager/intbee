@@ -9,7 +9,6 @@
   <%- include("../components/header.ejs") %>
   <div class="container">
     <% const p = player.username === game.players[0] ? 0 : 1; %>
-    <% console.log(p) %>
     <div class="top">
         <div class="progress-container">
           <div id="progress-bar"></div>
@@ -43,7 +42,7 @@
     </div>
     <div class="footer">
       <div class="score-display">
-        <pa
+        <p
           <b>Score:</b>
           <span class="score">
             <span id="pscore1"><%= game.score.first %></span>

@@ -1,7 +1,6 @@
 import { Game } from "@server/game";
 import { Pair } from "@util/structs";
 import { action, RankedAction, jsonParse } from "@util/common";
-import { User } from "@server/schemas";
 import { approx, compute, uid } from "@util/server";
 import { WSHandler } from "./wshandler";
 import { WebSocket } from "ws";
@@ -61,18 +60,24 @@ export class RankedHandler extends WSHandler {
     const answer = compute(data.answer);
     log(`Submission from ${username} in game ${gameId}: ${data.answer} (${answer})`);
 
-    if (approx(compute(game.answer), answer)) {
+    // if (approx(compute(game.answer), answer)) {
+    if (true) {
       const player = game.players.indexOf(username);
       game.score[player]++;
-      game.round++;
+
+      if (this.round < 5) {
+        game.round++;
+      }
 
       log(`Correction submission from ${game.players[player]}`);
 
       const winner = game.winner();
 
-      if (winner > -1) {
-        log(`${game.players[winner]} won in game ${gameId}`);
-        await this.updateRatings(game);
+      if (winner > -2) {
+        log(
+          `Game ${gameId} completed, result: ${winner === -1 ? "tie" : `${game.players[winner]}`} won`,
+        );
+        await game.applyRatingChanges();
       } else {
         await game.getProblem();
       }
@@ -95,36 +100,6 @@ export class RankedHandler extends WSHandler {
     await this.games.get(gameId)!.getProblem();
 
     return [gameId, this.games.get(gameId)!];
-  }
-
-  async updateRatings(game: Game) {
-    const winner = game.winner();
-
-    if (winner < 0) return;
-
-    const p1 = await User.findOne({ username: game.players[0] });
-
-    if (p1 === null) {
-      log("MAJOR ERROR", `player ${p1} not found`);
-      return;
-    }
-
-    const p2 = await User.findOne({ username: game.players[1] });
-
-    if (p2 === null) {
-      log("MAJOR ERROR", `player ${p2} not found`);
-      return;
-    }
-
-    if (winner === 0) {
-      await p1.updateOne({ rating: p1.rating! + game.ratingChanges[0] });
-      await p2.updateOne({ rating: p2.rating! - game.ratingChanges[1] });
-    } else {
-      await p1.updateOne({ rating: p1.rating! + game.ratingChanges[1] });
-      await p2.updateOne({ rating: p2.rating! - game.ratingChanges[0] });
-    }
-
-    log(`Updated ratings for players ${game.players}`);
   }
 
   cleanRoom(gameId: string) {
