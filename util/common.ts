@@ -84,6 +84,17 @@ export interface ProblemPartial {
   tags: string[];
 }
 
+export interface LBParticipant {
+  id: number;
+  name: string;
+  attempts: number[];
+}
+
+export interface LBPartial {
+  score_values: number[];
+  participants: LBParticipant[];
+}
+
 export interface TagPartial {
   content: string;
   tag: TagType;
