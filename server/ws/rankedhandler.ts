@@ -1,7 +1,7 @@
 import { Game } from "@server/game";
 import { Pair } from "@util/structs";
 import { action, RankedAction, jsonParse } from "@util/common";
-import { approx, compute, uid } from "@util/server";
+import { compute, uid } from "@util/server";
 import { WSHandler } from "./wshandler";
 import { WebSocket } from "ws";
 import { DateTime } from "luxon";
@@ -41,13 +41,13 @@ export class RankedHandler extends WSHandler {
       }
 
       case RankedAction.UPDATE: {
-        this.update(ws, username, data.data, game, gameId);
+        this.update(ws, username, game);
         break;
       }
     }
   }
 
-  async update(ws: WebSocket, username: string, data: any, game: Game, gameId: string) {
+  async update(ws: WebSocket, username: string, game: Game) {
     ws.send(action(RankedAction.UPDATE, game.toPartial(username)));
   }
 

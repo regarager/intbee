@@ -89,7 +89,7 @@ export class Game {
     } else if (this.score[1] >= 2) {
       return 1;
     }
-    if (this.round >= 5) {
+    if (this.round >= RANKED_MAX_ROUNDS) {
       return -1;
     }
 
