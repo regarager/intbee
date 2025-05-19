@@ -37,7 +37,8 @@ wikiRouter.get("/:tag", async (req, res) => {
     compiledMD.set(tag, output);
   } else {
     output = compiledMD.get(tag)!;
-    marked(tagContent.content ?? "", { async: true }).then(res => compiledMD.set(tag, res));
+    const content = tagContent.content ?? "";
+    marked(content.replace(/\\/g, "\\\\"), { async: true }).then(res => compiledMD.set(tag, res));
   }
 
   res.render(file("/pages/wiki_page.ejs"), { content: output, tag: tagContent.tag });

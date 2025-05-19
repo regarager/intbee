@@ -2,15 +2,17 @@ import express from "express";
 import { adminOnly } from "./api/auth";
 import { file } from "@util/server";
 import { Problem, Tag } from "@server/schemas";
-import { log, msg, ProblemPartial, TagPartial, TagType } from "@util/common";
+import { log, TagPartial, TagType } from "@util/common";
 
 export const adminRouter = express.Router();
 
-adminRouter.get("/", adminOnly, (_, res) => {
+adminRouter.use("/", adminOnly);
+
+adminRouter.get("/", (_, res) => {
   res.render(file("pages/home_admin.ejs"));
 });
 
-adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
+adminRouter.post("/problem/:id", async (req, res) => {
   const id = req.params.id ?? "";
 
   const data = { ...req.body, tags: req.body.tags.replaceAll(" ", "").split(",") };
@@ -44,12 +46,12 @@ adminRouter.post("/problem/:id", adminOnly, async (req, res) => {
   res.set("HX-Redirect", "/gym").send("OK");
 });
 
-adminRouter.get("/problem/new", adminOnly, async (_, res) => {
+adminRouter.get("/problem/new", async (_, res) => {
   const problem = { latex: "", answer: "", rating: 0, tags: [], variable: "x" };
   res.render(file("pages/problem_admin.ejs"), { problem });
 });
 
-adminRouter.get("/problem/:id", adminOnly, async (req, res) => {
+adminRouter.get("/problem/:id", async (req, res) => {
   const id = req.params.id ?? "";
 
   const problem = await Problem.findById(id);
@@ -61,12 +63,12 @@ adminRouter.get("/problem/:id", adminOnly, async (req, res) => {
   }
 });
 
-adminRouter.get("/problem/new", adminOnly, async (_, res) => {
+adminRouter.get("/problem/new", async (_, res) => {
   const tag = { content: "Lorem ipsum", tag: "" };
   res.render(file("pages/wiki_admin.ejs"), { tag });
 });
 
-adminRouter.get("/wiki/:id", adminOnly, async (req, res) => {
+adminRouter.get("/wiki/:id", async (req, res) => {
   const id = req.params.id ?? "";
 
   const tag = await Tag.findOne({ tag: id });
@@ -74,11 +76,12 @@ adminRouter.get("/wiki/:id", adminOnly, async (req, res) => {
   if (tag == null) {
     res.redirect("/error");
   } else {
-    res.render(file("pages/wiki_admin.ejs"), { tag: tag.tag, content: tag.content });
+    const content = tag.content!.replace(/\\/g, "\\\\");
+    res.render(file("pages/wiki_admin.ejs"), { tag: tag.tag, content });
   }
 });
 
-adminRouter.post("/wiki/", adminOnly, async (req, res) => {
+adminRouter.post("/wiki/", async (req, res) => {
   const data = req.body as TagPartial;
 
   if (!Object.values(TagType).includes(data.tag)) {
@@ -94,6 +97,8 @@ adminRouter.post("/wiki/", adminOnly, async (req, res) => {
   } else {
     await Tag.findOne({ tag: data.tag }).updateOne({ content: data.content });
   }
+
+  log(`Updated tag ${data.tag}`);
 
   res.send("OK");
 });

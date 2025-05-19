@@ -50,14 +50,11 @@
   background-color: gray;
   height: 1em;
   align-self: flex-start;
-  border-radius: 1em;
 }
 
 #progress-bar {
-  width: 50vw;
   background-color: green;
   height: 1em;
-  border-radius: 1em;
 }
 
 #player-ratings {
@@ -68,4 +65,11 @@
 
 #round-display {
   margin-left: 1em;
+}
+
+.circle {
+  width: 2em;
+  height: 2em;
+  border-radius: 2em;
+  border: 2px solid black;
 }

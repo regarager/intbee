@@ -38,7 +38,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
 export const authOnly = (req: Request, res: Response, next: NextFunction) => {
   if (req.user) {
-    log(`User ${req.user.username} accessed ${req.originalUrl}`);
     next();
   } else {
     log(`Unauthenticated request to ${req.url}`);

@@ -30,7 +30,7 @@ document.querySelector("#save-btn")!.addEventListener("click", async () => {
     });
 
     alert("Success!");
-  } catch (ignored) {
+  } catch {
     alert("An error occurred");
   }
 });

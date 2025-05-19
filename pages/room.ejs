@@ -8,11 +8,13 @@
   </head>
   <%- include("../components/header.ejs") %>
   <div class="container">
+    <% const p = player.username === game.players[0] ? 0 : 1; %>
     <div class="top">
-      <div class="progress-container">
-        <div id="progress-bar"></div>
-      </div>
-      <span style="margin-left: 0.5em">
+        <div class="progress-container">
+          <div id="progress-bar"></div>
+        </div>
+        <p><b id="timer">0:00</b> remaining</p>
+      <span>
         <div id="player-ratings">
           <span>
             <%- include("../components/rating.ejs", {text: player.username, rating: player.rating})
@@ -20,9 +22,9 @@
             opponent.username, rating: opponent.rating}) %> (<%= opponent.rating %>)
           </span>
         </div>
-        <div id="rating-change" hidden>
-          <b>Win: <span id="rating-win"></span></b>
-          <b>Lose: <span id="rating-lose"></span></b>
+        <div id="rating-change">
+          <b>Win: <span id="rating-win">+<%= game.ratingChanges[p] %></span></b>
+          <b>Lose: <span id="rating-lose">-<%= game.ratingChanges[1 - p] %></span></b>
         </div>
       </span>
     </div>
@@ -40,7 +42,7 @@
     </div>
     <div class="footer">
       <div class="score-display">
-        <p>
+        <p
           <b>Score:</b>
           <span class="score">
             <span id="pscore1"><%= game.score.first %></span>
@@ -61,9 +63,4 @@
 
   <script src="/room-bundle.js"></script>
   <%- include("../components/mathjax.ejs") %>
-  <script>
-    setInterval(() => {
-      MathJax.typesetPromise();
-    }, 1000);
-  </script>
 </html>

@@ -1,9 +1,12 @@
-import { RankedAction, GamePartial, action, log } from "@util/common";
+import { RankedAction, GamePartial, action, log, RANKED_TIMER } from "@util/common";
+import { DateTime } from "luxon";
 
-// need main function to avoid weird conflicts
 function main() {
   const wsUrl = "ws://localhost:3000/ranked/ws/game";
   const socket = new WebSocket(wsUrl);
+  let timerHandle: NodeJS.Timeout;
+
+  const lastRound = 0;
 
   socket.onopen = () => {
     log("Connected WS");
@@ -24,29 +27,49 @@ function main() {
     }
   };
 
-  function updateRatingChanges(player: number, ratingChanges: number[]) {
-    document.getElementById("rating-win")!.innerText = "+" + ratingChanges[player].toString();
-    document.getElementById("rating-lose")!.innerText = "-" + ratingChanges[1 - player].toString();
-    document.getElementById("rating-change")!.hidden = false;
-  }
-
   function update(game: GamePartial) {
     const { player } = game;
 
-    updateRatingChanges(player, game.ratingChanges);
     document.getElementById("round-display")!.innerText = `Round #${game.round}`;
 
     const score = game.score;
     document.getElementById("pscore1")!.innerText = score[player].toString();
     document.getElementById("pscore2")!.innerText = score[1 - player].toString();
 
-    document.getElementById("problem-content")!.innerText = `$$${game.problem} dx $$`;
+    // stop rerender after game complete
+    if (game.winner === -2) {
+      document.getElementById("problem-content")!.innerText = `$$${game.problem} \\mathop{dx} $$`;
 
-    if (game.winner > -1) {
+      (window as any).MathJax.typesetPromise();
+    }
+
+    const progressBar = document.querySelector("#progress-bar") as HTMLSpanElement;
+    const timer = document.querySelector("#timer") as HTMLElement;
+
+    if (game.round > lastRound) {
+      clearInterval(timerHandle);
+    }
+
+    timerHandle = setInterval(() => {
+      const curr = DateTime.now().toMillis();
+      const delta = curr - game.roundEndTime + RANKED_TIMER * 1000;
+      const completion = delta / (RANKED_TIMER * 1000);
+
+      progressBar.style.width = `${Math.min(completion * 100, 100)}%`;
+
+      const remaining = Math.max(Math.ceil((RANKED_TIMER * 1000 - delta) / 1000), 0);
+      timer.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, "0")}`;
+    }, 50);
+
+    if (game.winner === -1) {
+      document.getElementById("winner")!.innerText = `Tied! No rating changes.`;
+    } else if (game.winner > -1) {
       socket.close();
 
       document.getElementById("winner")!.innerText = `Winner: ${game.players[game.winner]}!`;
+    }
 
+    if (game.winner > -2) {
       document.getElementById("game-result")!.hidden = false;
     }
   }

@@ -1,6 +1,7 @@
 import { cdf } from "./statistics";
-import { Problem } from "./schemas";
-import { GamePartial } from "@util/common";
+import { Problem, User } from "./schemas";
+import { GamePartial, log, RANKED_MAX_ROUNDS, RANKED_TIMER } from "@util/common";
+import { DateTime } from "luxon";
 
 export class Rating {
   private rating: number;
@@ -29,14 +30,15 @@ export class Rating {
 }
 
 export class Game {
-  public answer: string;
-  public players: string[];
-  public problem: string;
-  public ratingChanges: number[];
-  public ratings: number[];
-  public round: number;
-  public score: number[];
-  public used: string[];
+  answer: string;
+  players: string[];
+  problem: string;
+  ratingChanges: number[];
+  ratings: number[];
+  round: number;
+  score: number[];
+  used: string[];
+  roundEndTime: number;
 
   constructor(players: string[], ratings: number[]) {
     this.players = players;
@@ -49,9 +51,18 @@ export class Game {
 
     this.score = [0, 0];
     this.used = [];
-    this.round = 1;
+    this.round = 0;
     this.problem = "";
     this.answer = "";
+
+    // overridden anyways
+    this.roundEndTime = 0;
+
+    this.startTimer();
+  }
+
+  startTimer() {
+    this.roundEndTime = DateTime.now().plus({ seconds: RANKED_TIMER }).toMillis();
   }
 
   async getProblem() {
@@ -60,16 +71,16 @@ export class Game {
       { $sample: { size: 1 } },
     ]);
 
-    const problem = matches[0];
-
-    if (!problem) return null;
+    const problem = matches[0]!;
 
     this.used.push(problem.id);
 
     this.problem = problem.latex!;
     this.answer = problem.answer!;
 
-    return problem[0];
+    this.round++;
+
+    this.startTimer();
   }
 
   winner() {
@@ -78,8 +89,11 @@ export class Game {
     } else if (this.score[1] >= 2) {
       return 1;
     }
+    if (this.round >= RANKED_MAX_ROUNDS) {
+      return -1;
+    }
 
-    return -1;
+    return -2;
   }
 
   toPartial(player: string): GamePartial {
@@ -92,6 +106,42 @@ export class Game {
       round: this.round,
       problem: this.problem,
       winner: this.winner(),
+      roundEndTime: this.roundEndTime,
     };
+  }
+
+  async applyRatingChanges() {
+    const winner = this.winner();
+
+    if (winner === -2) {
+      log("CRITICAL: rating changes called when game is not complete");
+      return;
+    }
+
+    const p1 = await User.findOne({ username: this.players[0] });
+
+    if (p1 === null) {
+      log("MAJOR ERROR", `player ${p1} not found`);
+      return;
+    }
+
+    const p2 = await User.findOne({ username: this.players[1] });
+
+    if (p2 === null) {
+      log("MAJOR ERROR", `player ${p2} not found`);
+      return;
+    }
+
+    if (winner === 0) {
+      await p1.updateOne({ rating: p1.rating! + this.ratingChanges[0] });
+      await p2.updateOne({ rating: p2.rating! - this.ratingChanges[0] });
+    } else if (winner === 1) {
+      await p1.updateOne({ rating: p1.rating! - this.ratingChanges[1] });
+      await p2.updateOne({ rating: p2.rating! + this.ratingChanges[1] });
+    } else {
+      // do nothing
+    }
+
+    log(`Updated ratings for players ${this.players}`);
   }
 }

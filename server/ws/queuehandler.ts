@@ -68,8 +68,6 @@ export class QueueHandler extends WSHandler {
 
       log(`Created game ${gameId} with users ${game.players}`);
 
-      log(this.sockets.keys());
-
       game.players.forEach(player => {
         this.queuedUsers.delete(player);
         this.sockets.get(player)!.send(action(QueueAction.REDIRECT, { gameId }));

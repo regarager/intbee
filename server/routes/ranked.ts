@@ -12,14 +12,16 @@ export const rankedRouter = express.Router();
 
 (expressWs as any)(rankedRouter);
 
+rankedRouter.use("/", authOnly);
+
 const rankedHandler = new RankedHandler();
 const queueHandler = new QueueHandler(rankedHandler);
 
-rankedRouter.get("/", authOnly, (_, res) => {
+rankedRouter.get("/", (_, res) => {
   res.render(file("pages/queue.ejs"));
 });
 
-rankedRouter.get("/room/:id", authOnly, async (req, res) => {
+rankedRouter.get("/room/:id", async (req, res) => {
   const { user } = req;
 
   const gameId = req.params.id;
@@ -50,7 +52,7 @@ rankedRouter.get("/room/:id", authOnly, async (req, res) => {
   });
 });
 
-rankedRouter.get("/queue", authOnly, (_, res) => {
+rankedRouter.get("/queue", (_, res) => {
   const front50 = queueHandler.queue.slice(50);
 
   res.send(front50);
