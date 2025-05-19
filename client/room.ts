@@ -39,6 +39,8 @@ function main() {
     // stop rerender after game complete
     if (game.winner === -2) {
       document.getElementById("problem-content")!.innerText = `$$${game.problem} \\mathop{dx} $$`;
+
+      (window as any).MathJax.typesetPromise();
     }
 
     const progressBar = document.querySelector("#progress-bar") as HTMLSpanElement;
@@ -59,11 +61,15 @@ function main() {
       timer.innerText = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, "0")}`;
     }, 50);
 
-    if (game.winner > -2) {
+    if (game.winner === -1) {
+      document.getElementById("winner")!.innerText = `Tied! No rating changes.`;
+    } else if (game.winner > -1) {
       socket.close();
 
       document.getElementById("winner")!.innerText = `Winner: ${game.players[game.winner]}!`;
+    }
 
+    if (game.winner > -2) {
       document.getElementById("game-result")!.hidden = false;
     }
   }

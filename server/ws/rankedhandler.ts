@@ -1,7 +1,7 @@
 import { Game } from "@server/game";
 import { Pair } from "@util/structs";
-import { action, RankedAction, jsonParse } from "@util/common";
-import { compute, uid } from "@util/server";
+import { action, RankedAction, jsonParse, RANKED_TIMER, RANKED_MAX_ROUNDS } from "@util/common";
+import { approx, compute, uid } from "@util/server";
 import { WSHandler } from "./wshandler";
 import { WebSocket } from "ws";
 import { DateTime } from "luxon";
@@ -47,11 +47,11 @@ export class RankedHandler extends WSHandler {
     }
   }
 
-  async update(ws: WebSocket, username: string, game: Game) {
+  update(ws: WebSocket, username: string, game: Game) {
     ws.send(action(RankedAction.UPDATE, game.toPartial(username)));
   }
 
-  async submit(ws: WebSocket, username: string, data: any, game: Game, gameId: string) {
+  async submit(_: WebSocket, username: string, data: any, game: Game, gameId: string) {
     if (DateTime.now().toMillis() > game.roundEndTime) {
       log(`Submission from ${username} after time expired`);
       return;
@@ -60,14 +60,12 @@ export class RankedHandler extends WSHandler {
     const answer = compute(data.answer);
     log(`Submission from ${username} in game ${gameId}: ${data.answer} (${answer})`);
 
-    // if (approx(compute(game.answer), answer)) {
-    if (true) {
+    if (approx(compute(game.answer), answer)) {
+      clearTimeout(this.timers.get(gameId));
+      this.timers.delete(gameId);
+
       const player = game.players.indexOf(username);
       game.score[player]++;
-
-      if (this.round < 5) {
-        game.round++;
-      }
 
       log(`Correction submission from ${game.players[player]}`);
 
@@ -79,12 +77,10 @@ export class RankedHandler extends WSHandler {
         );
         await game.applyRatingChanges();
       } else {
-        await game.getProblem();
+        await this.nextProblem(gameId, game);
       }
 
-      game.players.forEach(player =>
-        this.sockets.get(player)!.send(action(RankedAction.UPDATE, game.toPartial(player))),
-      );
+      this.updatePlayers(this.games.get(gameId)!);
     }
   }
 
@@ -96,10 +92,30 @@ export class RankedHandler extends WSHandler {
 
     const gameId = uid(4);
 
-    this.games.set(gameId, new Game(users, [player1.second, player2.second]));
-    await this.games.get(gameId)!.getProblem();
+    const game = new Game(users, [player1.second, player2.second]);
 
-    return [gameId, this.games.get(gameId)!];
+    this.games.set(gameId, game);
+
+    // figure out a better way to let ws connect
+    setTimeout(() => {
+      this.nextProblem(gameId, game);
+    }, 1000);
+
+    return [gameId, game];
+  }
+
+  async nextProblem(gameId: string, game: Game) {
+    if (game.round >= RANKED_MAX_ROUNDS) return;
+
+    await game.getProblem();
+    this.updatePlayers(game);
+    this.timers.set(
+      gameId,
+      setTimeout(async () => {
+        log(`Game ${gameId} timed out on round ${game.round}`);
+        await this.nextProblem(gameId, game);
+      }, RANKED_TIMER * 1000),
+    );
   }
 
   cleanRoom(gameId: string) {
@@ -112,5 +128,9 @@ export class RankedHandler extends WSHandler {
     });
 
     this.games.delete(gameId);
+  }
+
+  updatePlayers(game: Game) {
+    game.players.forEach(player => this.update(this.sockets.get(player)!, player, game));
   }
 }

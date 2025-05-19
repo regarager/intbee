@@ -54,11 +54,15 @@ export class Game {
     this.round = 0;
     this.problem = "";
     this.answer = "";
-    this.roundEndTime = DateTime.now().plus({ seconds: RANKED_TIMER }).toMillis();
+
+    // overridden anyways
+    this.roundEndTime = 0;
+
+    this.startTimer();
   }
 
   startTimer() {
-    this.roundEndTime = DateTime.now().plus({ minutes: 2 }).toMillis();
+    this.roundEndTime = DateTime.now().plus({ seconds: RANKED_TIMER }).toMillis();
   }
 
   async getProblem() {
@@ -67,9 +71,7 @@ export class Game {
       { $sample: { size: 1 } },
     ]);
 
-    const problem = matches[0];
-
-    if (!problem) return null;
+    const problem = matches[0]!;
 
     this.used.push(problem.id);
 
@@ -79,8 +81,6 @@ export class Game {
     this.round++;
 
     this.startTimer();
-
-    return problem[0];
   }
 
   winner() {
