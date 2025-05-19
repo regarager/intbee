@@ -1,11 +1,11 @@
-import { Participant } from "./types";
+import { LBParticipant } from "@util/common";
 
-const tbody = document.getElementById("tbody");
+const tbody = document.getElementById("tbody")!;
 const wsUrl = "ws://localhost:3000";
 const socket = new WebSocket(wsUrl);
 const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15];
 
-function getScore(participant: Participant): number {
+function getScore(participant: LBParticipant): number {
   let ans = 0;
   for (let i = 0; i < participant.attempts.length; i++) {
     ans += participant.attempts[i] > 0 ? score[i] : 0;
@@ -30,10 +30,7 @@ function makeOfficialToggleButton(name: string, id: number): HTMLButtonElement {
   return btn;
 }
 
-function makeButtons(
-  participantId: number,
-  questionIndex: number,
-): HTMLDivElement {
+function makeButtons(participantId: number, questionIndex: number): HTMLDivElement {
   const container = document.createElement("div");
   container.className = "cell-btns";
   const correctBtn = document.createElement("button");
@@ -80,7 +77,7 @@ function makeButtons(
   return container;
 }
 
-function updateAdminTable(data: Participant[]) {
+function updateAdminTable(data: LBParticipant[]) {
   // data = data.sort((a, b) => getScore(b) - getScore(a));
   tbody.innerHTML = "";
 
@@ -92,10 +89,8 @@ function updateAdminTable(data: Participant[]) {
     tr.appendChild(idCell);
 
     const nameCell = document.createElement("td");
-    nameCell.appendChild(
-      makeOfficialToggleButton(participant.name, participant.id),
-    );
-    nameCell.style.backgroundColor = participant.official ? "white" : "#add8e6";
+    nameCell.appendChild(makeOfficialToggleButton(participant.name, participant.id));
+    nameCell.style.backgroundColor = "white";
 
     tr.appendChild(nameCell);
 
@@ -111,8 +106,7 @@ function updateAdminTable(data: Participant[]) {
 
     participant.attempts.forEach((attempt, index) => {
       const problemCell = document.createElement("td");
-      problemCell.className =
-        attempt === 0 ? "unattempted" : attempt > 0 ? "correct" : "wrong";
+      problemCell.className = attempt === 0 ? "unattempted" : attempt > 0 ? "correct" : "wrong";
 
       const attemptDisplay = document.createElement("span");
       attemptDisplay.textContent = Math.abs(attempt).toString();
@@ -132,41 +126,39 @@ socket.addEventListener("open", () => {
   socket.send(JSON.stringify({ request: "data" }));
 });
 
-socket.addEventListener("message", (ev) => {
+socket.addEventListener("message", ev => {
   console.log("updated");
   const content = ev.data + "";
   if (!content.startsWith("[")) return;
-  const data = JSON.parse(content) as Participant[];
+  const data = JSON.parse(content) as LBParticipant[];
   updateAdminTable(data);
 });
 
 socket.addEventListener("close", () => console.log("Admin disconnected"));
 
-document.getElementById("form").addEventListener("submit", (e) => {
+document.getElementById("form")!.addEventListener("submit", e => {
   const nameInput = document.getElementById("name-input") as HTMLInputElement;
-  const actionInput = document.getElementById(
-    "action-input",
-  ) as HTMLSelectElement;
+  const actionInput = document.getElementById("action-input") as HTMLSelectElement;
 
   e.preventDefault();
 
   const action = actionInput.value;
   console.log(action);
-  const obj = { request: `admin-${action}` };
+  const obj: any = { request: `admin-${action}` };
 
   if (action === "add") {
-    obj["name"] = nameInput.value;
+    obj.name = nameInput.value;
   } else if (action === "remove") {
-    obj["id"] = nameInput.value;
+    obj.id = nameInput.value;
   }
 
   socket.send(JSON.stringify(obj));
 });
 
-document.getElementById("save").addEventListener("click", () => {
+document.getElementById("save")!.addEventListener("click", () => {
   socket.send(JSON.stringify({ request: "admin-save" }));
 });
 
-document.getElementById("load").addEventListener("click", () => {
+document.getElementById("load")!.addEventListener("click", () => {
   socket.send(JSON.stringify({ request: "admin-load" }));
 });

@@ -1,14 +1,14 @@
-import { Participant } from "./types";
+import { LBPartial, LBParticipant } from "@util/common";
 
-const tbody = document.getElementById("tbody");
+const tbody = document.getElementById("tbody")!;
 
-const wsUrl = "ws://localhost:3000";
+const wsUrl = "ws://localhost:3000/lb";
 
 const socket = new WebSocket(wsUrl);
 
 const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15];
 
-function getScore(participant: Participant) {
+function getScore(participant: LBParticipant) {
   let ans = 0;
 
   for (let i = 0; i < participant.attempts.length; i++) {
@@ -19,12 +19,11 @@ function getScore(participant: Participant) {
 }
 
 function formatName(name: string) {
-  const parts = name.split(" ");
-
-  return `${parts[0]} ${parts[1].at(0)}.`;
+  // currently unused
+  return name;
 }
 
-function updateLeaderboard(data: Participant[]) {
+function updateLeaderboard(data: LBParticipant[]) {
   data = data.sort((a, b) => getScore(b) - getScore(a));
 
   tbody.innerHTML = "";
@@ -40,16 +39,14 @@ function updateLeaderboard(data: Participant[]) {
     id.innerText = participant.id.toString();
     name.innerText = formatName(participant.name);
 
-    if (!participant.official) {
-      name.style.backgroundColor = "#add8e6";
-    }
+    name.style.backgroundColor = "#add8e6";
 
-    if (participant.official && i < 3) name.classList.add(top_three[i]);
+    if (i < 3) name.classList.add(top_three[i]);
 
     tr.append(id);
     tr.appendChild(name);
 
-    participant.attempts.forEach((x) => {
+    participant.attempts.forEach(x => {
       const problem = document.createElement("td");
       const status = x === 0 ? "unattempted" : x > 0 ? "correct" : "wrong";
 
@@ -71,23 +68,22 @@ function updateLeaderboard(data: Participant[]) {
     tr.appendChild(pts);
 
     tbody.appendChild(tr);
-    if (participant.official) i++;
+    i++;
   }
 }
 
-socket.addEventListener("open", (ev) => {
+socket.addEventListener("open", ev => {
   console.log("connected");
 });
 
-socket.addEventListener("message", (ev) => {
+socket.addEventListener("message", ev => {
   const content = ev.data + "";
-  if (!content.startsWith("[")) return;
-  const data = JSON.parse(content) as Participant[];
-  updateLeaderboard(data);
+  const data = JSON.parse(content) as LBPartial;
+  updateLeaderboard(data.participants);
 });
 
-socket.addEventListener("close", (ev) => console.log("closed"));
+socket.addEventListener("close", ev => console.log("closed"));
 
 setTimeout(() => {
-  socket.send(JSON.stringify({ request: "data" }));
+  socket.send(JSON.stringify({ action: "data" }));
 }, 3000);

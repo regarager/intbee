@@ -10,6 +10,8 @@ module.exports = {
     problem: "./client/problem.ts",
     problem_admin: "./client/problem_admin.ts",
     queue: "./client/queue.ts",
+    lb: "./client/leaderboard.ts",
+    lb_admin: "./client/adminlb.ts",
   },
   output: {
     path: path.resolve(__dirname, "./dist"),
