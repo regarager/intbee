@@ -58,6 +58,8 @@ export class QueueHandler extends WSHandler {
 
     log(`Enqueued ${username}`);
 
+    this.queuedUsers.add(username);
+
     if (this.queue.size() >= 2) {
       const [gameId, game] = await this.rankedHandler.createGame(
         this.queue.dequeue(),

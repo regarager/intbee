@@ -8,15 +8,10 @@
   </head>
   <%- include("../components/header.ejs") %>
   <div class="container">
-    <h1>Wiki - Home</h1>
-    <h2>Articles</h2>
-    <ul>
-      <% for (const tag of tags) { %>
-      <li>
-        <a href="/wiki/<%= tag %>"><%= tag %></a>
-      </li>
-      <% } %>
-    </ul>
+    <h1>Wiki - <%= tag %></h1>
+    <% if (user && user.role === "admin") { %>
+    <a href="/admin/wiki/<%= tag %>">Edit</a>
+    <% } %> <%- content %>
   </div>
   <%- include("../components/mathjax.ejs") %>
 </html>

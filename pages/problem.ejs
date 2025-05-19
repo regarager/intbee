@@ -29,17 +29,36 @@
         <% } %>
       </div>
       <div class="solution">
-        <b>Solution:</b> <button id="show-sol">(click to reveal)</button>
-        <span id="problem-solution" hidden>$$<%= problem.answer %>$$</span>
+        <b>Solution:</b>
+        <button
+          id="show-sol"
+          hx-get="/api/problem/<%= problem.id %>/solution"
+          hx-target="#problem-solution"
+          hx-swap="innerHTML"
+        >
+          (click to reveal)
+        </button>
+        <span id="problem-solution"></span>
       </div>
-      <form id="submission">
+      <form
+        id="submission"
+        hx-post="/api/problem/<%= problem.id %>/verify"
+        hx-vals='js:{ latex: document.getElementById("answer-input").value }'
+        hx-target="#result"
+        hx-swap="innerHTML"
+        hx-indicator="#submit-btn"
+      >
         <label for="answer"><b>Answer:</b></label>
-        <math-field id="answer-input"></math-field>
+        <math-field id="answer-input" name="answer"></math-field>
         <button type="submit" id="submit-btn">Submit</button>
       </form>
-      <b id="result" hidden></b>
+      <b id="result"></b>
     </div>
-    <script src="/problem-bundle.js"></script>
+    <script>
+      document.addEventListener("htmx:afterSwap", function (evt) {
+        MathJax.typesetPromise();
+      });
+    </script>
     <%- include("../components/mathjax.ejs") %>
   </div>
 </html>

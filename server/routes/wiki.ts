@@ -1,29 +1,46 @@
 import express from "express";
 import { file } from "@util/server";
 import { Tag } from "@server/schemas";
+import { marked } from "marked";
 
 export const wikiRouter = express.Router();
 
-function parsePage(page: string) {
-  if (!page) {
-    return 1;
-  }
-  return parseInt(page) || -1;
+let tags: string[];
+
+const compiledMD = new Map<string, string>();
+
+async function loadArticles() {
+  const all = await Tag.find({});
+
+  tags = all.map(doc => doc.tag!);
 }
 
+loadArticles();
+
 wikiRouter.get("/", async (_, res) => {
-  res.redirect("/wiki/1");
+  res.render(file("/pages/wiki.ejs"), { tags });
 });
 
-wikiRouter.get("/:page", async (req, res) => {
-  const page = Math.min(parsePage(req.params.page), 1);
-  const size = 40;
+wikiRouter.get("/:tag", async (req, res) => {
+  const tag = req.params.tag;
 
-  const tags = await Tag.find()
-    .skip((page - 1) * size)
-    .limit(size);
+  const tagContent = await Tag.findOne({ tag });
 
-  res.render(file("/pages/wiki.ejs"), { tags });
+  if (!tagContent) {
+    res.redirect("/error");
+    return;
+  }
+
+  let output: string;
+  if (!compiledMD.has(tag)) {
+    output = await marked(tagContent.content ?? "");
+    compiledMD.set(tag, output);
+  } else {
+    output = compiledMD.get(tag)!;
+    marked(tagContent.content ?? "", { async: true }).then(res => compiledMD.set(tag, res));
+  }
+
+  res.render(file("/pages/wiki_page.ejs"), { content: output, tag: tagContent.tag });
 });
 
 wikiRouter.get("/problem/:id", async (req, res) => {

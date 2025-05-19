@@ -9,18 +9,23 @@
   </head>
   <%- include("../components/header.ejs") %>
   <div class="container">
-    <form id="login-form">
+    <form
+      id="login-form"
+      hx-post="/api/auth/login"
+      hx-target="#result"
+      hx-swap="innerHTML"
+      hx-indicator="#submit-btn"
+    >
       <span class="title">Login</span>
-      <span id="result" hidden></span>
       <label for="username">Username</label>
       <input type="text" name="username" />
       <label for="password">Password</label>
       <input type="password" name="password" />
       <span><a href="/auth/register">Register</a> instead?</span>
       <span id="form-footer">
-        <button id="submit-btn">Submit</button>
+        <span id="result"></span>
+        <button id="submit-btn" type="submit">Login</button>
       </span>
     </form>
   </div>
-  <script src="/login-bundle.js"></script>
 </html>

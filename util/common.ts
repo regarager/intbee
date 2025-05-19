@@ -34,6 +34,19 @@ export enum QueueAction {
   UPDATE = "update",
 }
 
+export enum TagType {
+  BETA = "beta",
+  FEYNMAN = "feynman",
+  GAMMA = "gamma",
+  GEOMETRY = "geometry",
+  IBP = "ibp",
+  IMPROPER = "improper",
+  PARFRACS = "parfracs",
+  SERIES = "series",
+  SUBSTITUTION = "substitution",
+  TRIG = "trig",
+}
+
 export function getRank(r: number) {
   return [
     "newbie",
@@ -79,6 +92,11 @@ export interface LBParticipant {
 export interface LBPartial {
   score_values: number[];
   participants: LBParticipant[];
+}
+
+export interface TagPartial {
+  content: string;
+  tag: TagType;
 }
 
 export function action(act: any, data: any) {
