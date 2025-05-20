@@ -17,7 +17,7 @@ import { authAPIRouter, authMiddleware } from "./routes/api/auth";
 import { problemRouter } from "./routes/api/problem";
 import { rankedRouter } from "./routes/ranked";
 import { adminRouter } from "./routes/admin";
-import { LBRouter } from "./routes/lb";
+import { lbRouter } from "./routes/lb";
 
 import { loggingMiddleware } from "./logging";
 
@@ -58,7 +58,7 @@ app.use("/auth", authRouter);
 app.use("/gym", gymRouter);
 app.use("/ranked", rankedRouter);
 app.use("/wiki", wikiRouter);
-app.use("/lb", LBRouter);
+app.use("/lb", lbRouter);
 
 app.use("/admin", adminRouter);
 

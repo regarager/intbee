@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Integration Bee Scoreboard</title>
@@ -7,28 +8,11 @@
   </head>
   <%- include("../components/header.ejs") %>
   <div class="container">
-    <h2>User Editor</h2>
-    <form id="form">
-      <label for="name-input">Name: </label>
-      <input type="text" id="name-input" />
-      <label for="action-input">Action: </label>
-      <select id="action-input">
-        <option value="add">Add</option>
-        <option value="remove">Remove</option>
-      </select>
-      <button type="submit">Submit</button>
-    </form>
-
-    <button id="save">Save</button>
-    <button id="load">Load</button>
-
     <table>
       <thead>
         <tr>
           <td>ID</td>
           <td>Name</td>
-          <td class="problem">Score</td>
-          <td class="problem">Submissions</td>
           <td class="problem">1</td>
           <td class="problem">2</td>
           <td class="problem">3</td>
@@ -46,6 +30,7 @@
           <td class="problem">15</td>
           <td class="problem">16</td>
           <td class="problem">17</td>
+          <td class="problem">Score</td>
         </tr>
       </thead>
       <tbody id="tbody">
@@ -53,5 +38,5 @@
       </tbody>
     </table>
   </div>
-  <script src="/lb_admin-bundle.js"></script>
+  <script src="/lb-bundle.js"></script>
 </html>

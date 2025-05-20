@@ -5,7 +5,7 @@ module.exports = {
   devtool: "inline-source-map",
   entry: {
     queue: "./client/queue.ts",
-    lb: "./client/leaderboard.ts",
+    lb: "./client/lb.ts",
     lb_admin: "./client/adminlb.ts",
     room: "./client/room.ts",
     wiki_admin: "./client/wiki_admin.ts",

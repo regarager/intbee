@@ -1,7 +1,8 @@
-import { LBParticipant } from "@util/common";
+import { LBPartial, LBParticipant } from "@util/common";
 
 const tbody = document.getElementById("tbody")!;
-const wsUrl = "ws://localhost:3000";
+const wsUrl = "ws://localhost:3000/lb";
+
 const socket = new WebSocket(wsUrl);
 const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15];
 
@@ -21,7 +22,7 @@ function makeOfficialToggleButton(name: string, id: number): HTMLButtonElement {
   btn.onclick = () => {
     socket.send(
       JSON.stringify({
-        request: "admin-toggle-official",
+        action: "admin-toggle-official",
         id: id,
       }),
     );
@@ -39,7 +40,7 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
   correctBtn.onclick = () => {
     socket.send(
       JSON.stringify({
-        request: "admin-correct",
+        action: "admin-correct",
         id: participantId,
         question: questionIndex,
       }),
@@ -51,7 +52,7 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
   wrongBtn.onclick = () => {
     socket.send(
       JSON.stringify({
-        request: "admin-wrong",
+        action: "admin-wrong",
         id: participantId,
         question: questionIndex,
       }),
@@ -63,7 +64,7 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
   undoBtn.onclick = () => {
     socket.send(
       JSON.stringify({
-        request: "admin-undo",
+        action: "admin-undo",
         id: participantId,
         question: questionIndex,
       }),
@@ -123,15 +124,14 @@ function updateAdminTable(data: LBParticipant[]) {
 // WebSocket event handlers
 socket.addEventListener("open", () => {
   console.log("Admin connected");
-  socket.send(JSON.stringify({ request: "data" }));
+  socket.send(JSON.stringify({ action: "data" }));
 });
 
 socket.addEventListener("message", ev => {
   console.log("updated");
   const content = ev.data + "";
-  if (!content.startsWith("[")) return;
-  const data = JSON.parse(content) as LBParticipant[];
-  updateAdminTable(data);
+  const data = JSON.parse(content) as LBPartial;
+  updateAdminTable(data.participants);
 });
 
 socket.addEventListener("close", () => console.log("Admin disconnected"));
@@ -144,7 +144,7 @@ document.getElementById("form")!.addEventListener("submit", e => {
 
   const action = actionInput.value;
   console.log(action);
-  const obj: any = { request: `admin-${action}` };
+  const obj: any = { action: `admin-${action}` };
 
   if (action === "add") {
     obj.name = nameInput.value;
@@ -156,9 +156,9 @@ document.getElementById("form")!.addEventListener("submit", e => {
 });
 
 document.getElementById("save")!.addEventListener("click", () => {
-  socket.send(JSON.stringify({ request: "admin-save" }));
+  socket.send(JSON.stringify({ action: "admin-save" }));
 });
 
 document.getElementById("load")!.addEventListener("click", () => {
-  socket.send(JSON.stringify({ request: "admin-load" }));
+  socket.send(JSON.stringify({ action: "admin-load" }));
 });

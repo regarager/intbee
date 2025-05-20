@@ -1,0 +1,57 @@
+table {
+  font-size: 16px;
+  border: 2px solid black;
+  padding: 2px;
+  border-collapse: collapse;
+}
+
+td {
+  border: 2px solid black;
+  text-align: center;
+}
+
+thead {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.wrong {
+  background-color: red;
+  color: white;
+}
+
+.correct {
+  background-color: green;
+  color: white;
+}
+
+.unattempted {
+  background-color: #dddddd;
+  color: white;
+}
+
+.gold {
+  background-color: #c9b037;
+  font-weight: bold;
+}
+
+.silver {
+  background-color: #aaaaaa;
+  font-weight: bold;
+}
+
+.bronze {
+  background-color: #ad8a56;
+  font-weight: bold;
+}
+
+.problem {
+  width: 48px;
+  color: green;
+  text-align: center;
+}
+
+.cell-btns {
+  display: flex;
+  flex-direction: row;
+}

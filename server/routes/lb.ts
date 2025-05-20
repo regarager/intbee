@@ -1,26 +1,20 @@
 import express from "express";
 import WebSocket from "ws";
-import { LBParticipant } from "@util/common";
+import { LBParticipant, log } from "@util/common";
 import { readFileSync, writeFileSync } from "fs";
 import { LBHandler } from "@server/ws/lbhandler";
 import expressWs from "express-ws";
 import { file } from "@util/server";
 
-export const LBRouter = express.Router();
+export const lbRouter = express.Router();
 
-(expressWs as any)(LBRouter);
-
-function log(...data: any[]) {
-  console.log(`[${new Date().toISOString()}]`, ...data);
-}
+(expressWs as any)(lbRouter);
 
 const handler = new LBHandler(17);
 const n = 17;
 const instances = new Set<WebSocket>();
 
 function addUser(name: string) {
-  console.log("orz");
-
   const participant: LBParticipant = {
     id: handler.instance.participants.length,
     name: name,
@@ -29,11 +23,11 @@ function addUser(name: string) {
   handler.instance.participants.push(participant);
 }
 
-LBRouter.get("/", (req, res) => {
-  res.render(file("pages/leaderboard.ejs"));
+lbRouter.get("/", (req, res) => {
+  res.render(file("pages/lb.ejs"));
 });
 
-LBRouter.get("/admin", (req, res) => {
+lbRouter.get("/admin", (req, res) => {
   res.render(file("pages/adminlb.ejs"));
 });
 
@@ -44,7 +38,7 @@ const broadcast = (callback: (client: WebSocket) => any) =>
     }
   });
 
-LBRouter.ws("/", ws => {
+lbRouter.ws("/", ws => {
   instances.add(ws);
   log("Client connected");
 
@@ -98,7 +92,6 @@ LBRouter.ws("/", ws => {
       log("loaded data");
     }
 
-    log("UPDATING");
     update();
   });
 
@@ -107,4 +100,3 @@ LBRouter.ws("/", ws => {
     log("Client disconnected");
   });
 });
-

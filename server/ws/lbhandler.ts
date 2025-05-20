@@ -3,6 +3,8 @@ import { WSHandler } from "./wshandler";
 import { WebSocket } from "ws";
 import { LBInstance } from "@server/lbinstance";
 
+const log = WSHandler.log;
+
 export class LBHandler extends WSHandler {
   instance;
 
@@ -11,12 +13,10 @@ export class LBHandler extends WSHandler {
     this.instance = new LBInstance(size);
   }
 
-  async process(ws: WebSocket, username: string, raw: any) {
+  async process(ws: WebSocket, username: string, data: any) {
     // if (!this.isAdmin(username)) return;
 
     this.sockets.set(username, ws);
-
-    const data = jsonParse(raw);
 
     const action = data.action;
 
