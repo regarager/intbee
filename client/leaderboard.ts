@@ -63,7 +63,7 @@ function updateLeaderboard(data: LBParticipant[]) {
 
     const pts = document.createElement("td");
     pts.innerText = getScore(participant).toString();
-    pts.style = "color: green;";
+    pts.style.color = "green";
 
     tr.appendChild(pts);
 
