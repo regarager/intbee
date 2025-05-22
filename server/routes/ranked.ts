@@ -1,12 +1,14 @@
-import express from "express";
-import { authOnly } from "./api/auth";
-import { file } from "@util/server";
-import { User } from "@server/schemas";
-import expressWs from "express-ws";
 import { log } from "console";
-import { msg } from "@util/common";
-import { RankedHandler } from "@server/ws/rankedhandler";
+import express from "express";
+import expressWs from "express-ws";
+
+import { User } from "@server/schemas";
 import { QueueHandler } from "@server/ws/queuehandler";
+import { RankedHandler } from "@server/ws/rankedhandler";
+import { msg } from "@util/common";
+import { file } from "@util/server";
+
+import { authOnly } from "./api/auth";
 
 export const rankedRouter = express.Router();
 

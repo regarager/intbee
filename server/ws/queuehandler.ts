@@ -1,9 +1,11 @@
-import { make_pair, Pair, Queue } from "@util/structs";
-import { WSHandler } from "./wshandler";
-import { action, jsonParse, QueueAction } from "@util/common";
-import { RankedHandler } from "./rankedhandler";
-import { User } from "@server/schemas";
 import { WebSocket } from "ws";
+
+import { User } from "@server/schemas";
+import { action, jsonParse, QueueAction } from "@util/common";
+import { make_pair, Pair, Queue } from "@util/structs";
+
+import { RankedHandler } from "./rankedhandler";
+import { WSHandler } from "./wshandler";
 
 const log = WSHandler.log;
 

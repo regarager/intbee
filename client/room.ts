@@ -1,5 +1,6 @@
-import { RankedAction, GamePartial, action, log, RANKED_TIMER } from "@util/common";
 import { DateTime } from "luxon";
+
+import { RankedAction, GamePartial, action, log, RANKED_TIMER } from "@util/common";
 
 function main() {
   const wsUrl = "ws://localhost:3000/ranked/ws/game";

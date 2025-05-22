@@ -1,5 +1,6 @@
-import { log as slog } from "@util/common";
 import { WebSocket } from "ws";
+
+import { log as slog } from "@util/common";
 
 export abstract class WSHandler {
   protected sockets: Map<string, WebSocket>;

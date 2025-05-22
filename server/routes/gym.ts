@@ -1,6 +1,7 @@
 import express from "express";
-import { file } from "@util/server";
+
 import { Problem } from "@server/schemas";
+import { file } from "@util/server";
 
 export const gymRouter = express.Router();
 

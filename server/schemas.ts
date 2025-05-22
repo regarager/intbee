@@ -1,5 +1,6 @@
-import { TagType } from "@util/common";
 import mongoose, { Schema } from "mongoose";
+
+import { TagType } from "@util/common";
 
 export const User = mongoose.model(
   "User",

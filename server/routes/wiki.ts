@@ -1,7 +1,8 @@
 import express from "express";
-import { file } from "@util/server";
-import { Tag } from "@server/schemas";
 import { marked } from "marked";
+
+import { Tag } from "@server/schemas";
+import { file } from "@util/server";
 
 export const wikiRouter = express.Router();
 

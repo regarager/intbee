@@ -1,7 +1,9 @@
-import { LBPartial, LBParticipant } from "@util/common";
-import { WSHandler } from "./wshandler";
 import { WebSocket } from "ws";
+
 import { LBInstance } from "@server/lbinstance";
+import { LBPartial, LBParticipant } from "@util/common";
+
+import { WSHandler } from "./wshandler";
 
 const log = WSHandler.log;
 

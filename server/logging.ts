@@ -1,5 +1,6 @@
-import { log } from "@util/common";
 import { NextFunction, Request, Response } from "express";
+
+import { log } from "@util/common";
 
 export const loggingMiddleware = async (req: Request, _: Response, next: NextFunction) => {
   log(`${req.method} ${req.url}`);

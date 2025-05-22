@@ -1,25 +1,23 @@
-import express, { Request, Response } from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-import path from "path";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import express, { Request, Response } from "express";
 import expressWs from "express-ws";
+import mongoose from "mongoose";
+import path from "path";
 import { exit } from "process";
 
-import { file } from "@util/server";
 import { getRank, log } from "@util/common";
-
-import { authRouter } from "./routes/auth";
-import { gymRouter } from "./routes/gym";
-import { wikiRouter } from "./routes/wiki";
-import { authAPIRouter, authMiddleware } from "./routes/api/auth";
-import { problemRouter } from "./routes/api/problem";
-import { rankedRouter } from "./routes/ranked";
-import { adminRouter } from "./routes/admin";
-import { lbRouter } from "./routes/lb";
+import { file } from "@util/server";
 
 import { loggingMiddleware } from "./logging";
+import { adminRouter } from "./routes/admin";
+import { authAPIRouter, authMiddleware } from "./routes/api/auth";
+import { problemRouter } from "./routes/api/problem";
+import { authRouter } from "./routes/auth";
+import { gymRouter } from "./routes/gym";
+import { lbRouter } from "./routes/lb";
+import { rankedRouter } from "./routes/ranked";
+import { wikiRouter } from "./routes/wiki";
 
 dotenv.config();
 

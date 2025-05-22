@@ -1,7 +1,9 @@
-import { cdf } from "./statistics";
-import { Problem, User } from "./schemas";
-import { GamePartial, log, RANKED_MAX_ROUNDS, RANKED_TIMER } from "@util/common";
 import { DateTime } from "luxon";
+
+import { GamePartial, log, RANKED_MAX_ROUNDS, RANKED_TIMER } from "@util/common";
+
+import { Problem, User } from "./schemas";
+import { cdf } from "./statistics";
 
 export class Rating {
   private rating: number;

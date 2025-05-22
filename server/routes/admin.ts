@@ -1,8 +1,10 @@
 import express from "express";
-import { adminOnly } from "./api/auth";
-import { file } from "@util/server";
+
 import { Problem, Tag } from "@server/schemas";
 import { log, TagPartial, TagType } from "@util/common";
+import { file } from "@util/server";
+
+import { adminOnly } from "./api/auth";
 
 export const adminRouter = express.Router();
 

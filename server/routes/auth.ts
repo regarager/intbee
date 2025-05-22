@@ -1,6 +1,7 @@
-import express from "express";
-import { file } from "@util/server";
 import dotenv from "dotenv";
+import express from "express";
+
+import { file } from "@util/server";
 
 dotenv.config();
 
