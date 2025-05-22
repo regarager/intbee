@@ -1,4 +1,4 @@
-import { jsonParse, LBPartial } from "@util/common";
+import { LBPartial, LBParticipant } from "@util/common";
 import { WSHandler } from "./wshandler";
 import { WebSocket } from "ws";
 import { LBInstance } from "@server/lbinstance";
@@ -13,34 +13,94 @@ export class LBHandler extends WSHandler {
     this.instance = new LBInstance(size);
   }
 
-  async process(ws: WebSocket, username: string, data: any) {
-    // if (!this.isAdmin(username)) return;
-
-    this.sockets.set(username, ws);
-
+  async process(ws: WebSocket, data: any) {
     const action = data.action;
 
     switch (action) {
+      case "data": {
+        this.sendData(ws);
+        break;
+      }
       case "correct": {
-        const { participant, question } = data;
-        const part = this.instance.participants.find(p => p === participant);
-
-        if (!part) return;
-
-        part.attempts[question] = Math.abs(part.attempts[question]) + 1;
+        this.correct(data);
         break;
       }
 
       case "incorrect": {
-        const { participant, question } = data;
-        const part = this.instance.participants.find(p => p === participant);
+        this.incorrect(data);
+        break;
+      }
 
-        if (!part) return;
+      case "undo": {
+        this.undo(data);
+        break;
+      }
 
-        part.attempts[question] = -Math.abs(part.attempts[question]) - 1;
+      case "user-add": {
+        this.userAdd(data);
+        break;
+      }
+
+      case "user-remove": {
+        this.userRemove(data);
         break;
       }
     }
+  }
+
+  sendData(ws: WebSocket) {
+    ws.send(JSON.stringify(this.toPartial()));
+  }
+
+  correct(data: any) {
+    const { participantId, question } = data;
+    const part = this.instance.participants[participantId];
+
+    if (!part) return;
+
+    part.attempts[question] = Math.abs(part.attempts[question]) + 1;
+  }
+
+  incorrect(data: any) {
+    const { participantId, question } = data;
+    const part = this.instance.participants[participantId];
+
+    if (!part) return;
+
+    part.attempts[question] = -Math.abs(part.attempts[question]) - 1;
+  }
+
+  undo(data: any) {
+    const { participantId, question } = data;
+    const part = this.instance.participants[participantId];
+
+    if (!part) return;
+
+    if (part.attempts[question] !== 0) {
+      part.attempts[question] =
+        Math.sign(part.attempts[question]) * (Math.abs(part.attempts[question]) - 1);
+    }
+  }
+
+  userAdd(data: any) {
+    const participant: LBParticipant = {
+      id: this.instance.participants.length,
+      name: data.name,
+      attempts: new Array(this.instance.size).fill(0),
+    };
+    this.instance.participants.push(participant);
+  }
+
+  userRemove(data: any) {
+    this.instance.participants = this.instance.participants.filter(p => p.name !== data.name);
+  }
+
+  save() {
+    log("unimplemented (save)");
+  }
+
+  load() {
+    log("unimplemented (load)");
   }
 
   isAdmin(username: string) {

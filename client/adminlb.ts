@@ -14,23 +14,6 @@ function getScore(participant: LBParticipant): number {
   return ans;
 }
 
-function makeOfficialToggleButton(name: string, id: number): HTMLButtonElement {
-  const btn = document.createElement("button");
-
-  btn.innerText = name;
-
-  btn.onclick = () => {
-    socket.send(
-      JSON.stringify({
-        action: "admin-toggle-official",
-        id: id,
-      }),
-    );
-  };
-
-  return btn;
-}
-
 function makeButtons(participantId: number, questionIndex: number): HTMLDivElement {
   const container = document.createElement("div");
   container.className = "cell-btns";
@@ -40,8 +23,8 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
   correctBtn.onclick = () => {
     socket.send(
       JSON.stringify({
-        action: "admin-correct",
-        id: participantId,
+        action: "correct",
+        participantId,
         question: questionIndex,
       }),
     );
@@ -52,8 +35,8 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
   wrongBtn.onclick = () => {
     socket.send(
       JSON.stringify({
-        action: "admin-wrong",
-        id: participantId,
+        action: "incorrect",
+        participantId,
         question: questionIndex,
       }),
     );
@@ -64,8 +47,8 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
   undoBtn.onclick = () => {
     socket.send(
       JSON.stringify({
-        action: "admin-undo",
-        id: participantId,
+        action: "undo",
+        participantId,
         question: questionIndex,
       }),
     );
@@ -90,8 +73,8 @@ function updateAdminTable(data: LBParticipant[]) {
     tr.appendChild(idCell);
 
     const nameCell = document.createElement("td");
-    nameCell.appendChild(makeOfficialToggleButton(participant.name, participant.id));
     nameCell.style.backgroundColor = "white";
+    nameCell.innerText = participant.name;
 
     tr.appendChild(nameCell);
 
@@ -143,22 +126,21 @@ document.getElementById("form")!.addEventListener("submit", e => {
   e.preventDefault();
 
   const action = actionInput.value;
-  console.log(action);
-  const obj: any = { action: `admin-${action}` };
+  const obj: any = { action: `user-${action}` };
 
   if (action === "add") {
     obj.name = nameInput.value;
   } else if (action === "remove") {
-    obj.id = nameInput.value;
+    obj.name = nameInput.value;
   }
 
   socket.send(JSON.stringify(obj));
 });
 
 document.getElementById("save")!.addEventListener("click", () => {
-  socket.send(JSON.stringify({ action: "admin-save" }));
+  socket.send(JSON.stringify({ action: "save" }));
 });
 
 document.getElementById("load")!.addEventListener("click", () => {
-  socket.send(JSON.stringify({ action: "admin-load" }));
+  socket.send(JSON.stringify({ action: "load" }));
 });

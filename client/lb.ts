@@ -39,8 +39,6 @@ function updateLeaderboard(data: LBParticipant[]) {
     id.innerText = participant.id.toString();
     name.innerText = formatName(participant.name);
 
-    name.style.backgroundColor = "#add8e6";
-
     if (i < 3) name.classList.add(top_three[i]);
 
     tr.append(id);
@@ -73,7 +71,7 @@ function updateLeaderboard(data: LBParticipant[]) {
 }
 
 socket.addEventListener("open", ev => {
-  console.log("connected");
+  socket.send(JSON.stringify({ action: "data" }));
 });
 
 socket.addEventListener("message", ev => {
@@ -83,7 +81,3 @@ socket.addEventListener("message", ev => {
 });
 
 socket.addEventListener("close", ev => console.log("closed"));
-
-setTimeout(() => {
-  socket.send(JSON.stringify({ action: "data" }));
-}, 3000);
