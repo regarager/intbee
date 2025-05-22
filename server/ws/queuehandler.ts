@@ -9,11 +9,13 @@ import { WSHandler } from "./wshandler";
 
 const log = WSHandler.log;
 
+// ws handler for queue
 export class QueueHandler extends WSHandler {
   public queue: Queue<Pair<string, number>>; // username, rating
   private queuedUsers: Set<string>;
   private rankedHandler: RankedHandler;
 
+  // creates empty handler
   constructor(rankedHandler: RankedHandler) {
     super();
     this.queue = new Queue<Pair<string, number>>();
@@ -21,6 +23,7 @@ export class QueueHandler extends WSHandler {
     this.rankedHandler = rankedHandler;
   }
 
+  // processes ws requests
   async process(ws: WebSocket, username: string, raw: any) {
     this.sockets.set(username, ws);
 
@@ -44,10 +47,12 @@ export class QueueHandler extends WSHandler {
     }
   }
 
+  // keeps track of user's websocket
   async init(ws: WebSocket, username: string) {
     this.sockets.set(username, ws);
   }
 
+  // enqueues user
   async enqueue(_: WebSocket, username: string) {
     if (this.queuedUsers.has(username)) {
       log(`User ${username} tried to queue, but is already in a game`);
@@ -82,6 +87,7 @@ export class QueueHandler extends WSHandler {
     });
   }
 
+  // fetches rating of a user
   private async getRating(player: string) {
     const user = await User.findOne({ username: player });
 

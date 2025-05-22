@@ -4,10 +4,10 @@ import { RankedAction, GamePartial, action, log, RANKED_TIMER } from "@util/comm
 
 function main() {
   const wsUrl = "ws://localhost:3000/ranked/ws/game";
-  const socket = new WebSocket(wsUrl);
   let timerHandle: NodeJS.Timeout;
-
   const lastRound = 0;
+
+  const socket = new WebSocket(wsUrl);
 
   socket.onopen = () => {
     log("Connected WS");
@@ -16,16 +16,8 @@ function main() {
 
   socket.onmessage = raw => {
     const data = JSON.parse(raw.data + "");
-    const action: RankedAction = data.action;
 
-    log(data);
-
-    switch (action) {
-      case RankedAction.UPDATE: {
-        update(data.data as GamePartial);
-        break;
-      }
-    }
+    update(data.data as GamePartial);
   };
 
   function update(game: GamePartial) {
@@ -88,4 +80,4 @@ function main() {
   });
 }
 
-main();
+window.onload = main;

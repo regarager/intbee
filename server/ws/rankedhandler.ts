@@ -15,6 +15,7 @@ export class RankedHandler extends WSHandler {
   public users: Map<string, string>; // username to game id
   private timers: Map<string, NodeJS.Timeout>;
 
+  // create new ranked handler
   constructor() {
     super();
     this.games = new Map<string, Game>();
@@ -22,6 +23,7 @@ export class RankedHandler extends WSHandler {
     this.timers = new Map<string, NodeJS.Timeout>();
   }
 
+  // processes ws requests
   async process(ws: WebSocket, username: string, raw: any) {
     this.sockets.set(username, ws);
 
@@ -49,10 +51,7 @@ export class RankedHandler extends WSHandler {
     }
   }
 
-  update(ws: WebSocket, username: string, game: Game) {
-    ws.send(action(RankedAction.UPDATE, game.toPartial(username)));
-  }
-
+  // handles submission from player
   async submit(_: WebSocket, username: string, data: any, game: Game, gameId: string) {
     if (DateTime.now().toMillis() > game.roundEndTime) {
       log(`Submission from ${username} after time expired`);
@@ -86,6 +85,7 @@ export class RankedHandler extends WSHandler {
     }
   }
 
+  // create game with two players
   async createGame(
     player1: Pair<string, number>,
     player2: Pair<string, number>,
@@ -99,13 +99,15 @@ export class RankedHandler extends WSHandler {
     this.games.set(gameId, game);
 
     // figure out a better way to let ws connect
-    setTimeout(() => {
-      this.nextProblem(gameId, game);
+    setTimeout(async () => {
+      log("sigma");
+      await this.nextProblem(gameId, game);
     }, 1000);
 
     return [gameId, game];
   }
 
+  // fetches problem for next round and resets timer
   async nextProblem(gameId: string, game: Game) {
     if (game.round >= RANKED_MAX_ROUNDS) return;
 
@@ -120,6 +122,7 @@ export class RankedHandler extends WSHandler {
     );
   }
 
+  // deletes a room
   cleanRoom(gameId: string) {
     const game = this.games.get(gameId);
 
@@ -132,7 +135,14 @@ export class RankedHandler extends WSHandler {
     this.games.delete(gameId);
   }
 
+  // send game state to every player
   updatePlayers(game: Game) {
-    game.players.forEach(player => this.update(this.sockets.get(player)!, player, game));
+    game.players.forEach(player => {
+      this.update(this.sockets.get(player)!, player, game);
+    });
+  }
+
+  update(ws: WebSocket, player: string, game: Game) {
+    ws.send(action(RankedAction.UPDATE, game.toPartial(player)));
   }
 }
