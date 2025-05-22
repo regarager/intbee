@@ -1,3 +1,4 @@
+// formats date in HH:MM:SS
 function formatDate(date: Date): string {
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
@@ -6,10 +7,12 @@ function formatDate(date: Date): string {
   return `[${hours}:${minutes}:${seconds}]`;
 }
 
+// adds time to front of each log
 export function log(...data: any[]) {
   console.log(formatDate(new Date()), ...data);
 }
 
+// tries to parse json, returns null if error
 export function jsonParse(data: string) {
   try {
     return JSON.parse(data);
@@ -18,15 +21,18 @@ export function jsonParse(data: string) {
   }
 }
 
+// min and max in one function
 export function clamp(x: number, lower: number = 0, upper: number = Infinity) {
   return Math.max(Math.min(x, upper), lower);
 }
 
+// possible ws requests for game room
 export enum RankedAction {
   SUBMIT = "submit",
   UPDATE = "update",
 }
 
+// possible ws requests for queue
 export enum QueueAction {
   INIT = "init",
   QUEUE = "queue",
@@ -34,6 +40,7 @@ export enum QueueAction {
   UPDATE = "update",
 }
 
+// tag enum, also used for articles in wiki
 export enum TagType {
   BETA = "beta",
   FEYNMAN = "feynman",
@@ -47,6 +54,7 @@ export enum TagType {
   TRIG = "trig",
 }
 
+// converts rating to rank
 export function getRank(r: number) {
   return [
     "newbie",
@@ -61,10 +69,7 @@ export function getRank(r: number) {
   ][clamp(Math.floor((r - 1) / 500), 0, 8)];
 }
 
-export function msg(message: string) {
-  return { message };
-}
-
+// contains game info to send to client (reduced Game)
 export interface GamePartial {
   player: number;
   players: string[];
@@ -77,6 +82,7 @@ export interface GamePartial {
   roundEndTime: number;
 }
 
+// contains problem info to send/receive from client (reduced Problem schema)
 export interface ProblemPartial {
   latex: string;
   answer: string;
@@ -84,25 +90,30 @@ export interface ProblemPartial {
   tags: string[];
 }
 
+// contains participant info for leaderboard tool
 export interface LBParticipant {
   id: number;
   name: string;
   attempts: number[];
 }
 
+// contains data for leaderboard instance
 export interface LBPartial {
   score_values: number[];
   participants: LBParticipant[];
 }
 
+// contains data for tag/wiki article
 export interface TagPartial {
   content: string;
   tag: TagType;
 }
 
+// appends action property to data object
 export function action(act: any, data: any) {
   return JSON.stringify({ action: act, data });
 }
 
+// configuration for ranked game
 export const RANKED_TIMER = 120;
 export const RANKED_MAX_ROUNDS = 5;
