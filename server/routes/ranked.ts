@@ -5,7 +5,6 @@ import expressWs from "express-ws";
 import { User } from "@server/schemas";
 import { QueueHandler } from "@server/ws/queuehandler";
 import { RankedHandler } from "@server/ws/rankedhandler";
-import { msg } from "@util/common";
 import { file } from "@util/server";
 
 import { authOnly } from "./api/auth";
@@ -65,7 +64,6 @@ rankedRouter.ws("/ws/game", (ws, req) => {
 
   if (!user) {
     log("Failed to authenticate websocket connection");
-    ws.send(JSON.stringify(msg("Failed authentication")));
     ws.close();
     return;
   }
@@ -80,7 +78,6 @@ rankedRouter.ws("/ws/queue", (ws, req) => {
 
   if (!user) {
     log("Failed to authenticate websocket connection");
-    ws.send(JSON.stringify(msg("Failed authentication")));
     ws.close();
     return;
   }
