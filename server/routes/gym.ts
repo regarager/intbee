@@ -5,6 +5,7 @@ import { file } from "@util/server";
 
 export const gymRouter = express.Router();
 
+// redirects to first page if none given
 function parsePage(page: string) {
   if (!page) {
     return 1;
@@ -12,10 +13,12 @@ function parsePage(page: string) {
   return parseInt(page) || -1;
 }
 
+// redirects home of gym to first page
 gymRouter.get("/", async (_, res) => {
   res.redirect("/gym/1");
 });
 
+// sends specified page, 50 problems per page
 gymRouter.get("/:page", async (req, res) => {
   const page = Math.min(parsePage(req.params.page), 1);
   const size = 40;
@@ -28,6 +31,7 @@ gymRouter.get("/:page", async (req, res) => {
   res.render(file("/pages/gym.ejs"), { problems });
 });
 
+// render specific problem
 gymRouter.get("/problem/:id", async (req, res) => {
   const id = req.params.id ?? "";
 

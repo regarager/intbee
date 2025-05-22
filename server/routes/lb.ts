@@ -14,26 +14,24 @@ const n = 17;
 const handler = new LBHandler(n);
 const instances = new Set<WebSocket>();
 
+// client-facing page, does not show any admin tools
 lbRouter.get("/", (_, res) => {
   res.render(file("pages/lb.ejs"));
 });
 
+// admin-facing page, has admin options to edit user info
 lbRouter.get("/admin", (_, res) => {
   res.render(file("pages/adminlb.ejs"));
 });
-
-const broadcast = (callback: (client: WebSocket) => any) =>
-  instances.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      callback(client);
-    }
-  });
 
 lbRouter.ws("/", ws => {
   instances.add(ws);
   log("Client connected");
 
-  const update = () => broadcast(client => client.send(JSON.stringify(handler.toPartial())));
+  // send state to all clients
+  const update = () => {
+    instances.forEach(client => client.send(JSON.stringify(handler.toPartial())));
+  };
 
   ws.on("message", async message => {
     const data = jsonParse(message.toString());

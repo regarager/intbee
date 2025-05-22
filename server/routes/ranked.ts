@@ -15,13 +15,16 @@ export const rankedRouter = express.Router();
 
 rankedRouter.use("/", authOnly);
 
+// ws handlers for queue and games
 const rankedHandler = new RankedHandler();
 const queueHandler = new QueueHandler(rankedHandler);
 
+// queue page
 rankedRouter.get("/", (_, res) => {
   res.render(file("pages/queue.ejs"));
 });
 
+// renders room
 rankedRouter.get("/room/:id", async (req, res) => {
   const { user } = req;
 
@@ -53,12 +56,14 @@ rankedRouter.get("/room/:id", async (req, res) => {
   });
 });
 
+// sends first 50 people in queue
 rankedRouter.get("/queue", (_, res) => {
   const front50 = queueHandler.queue.slice(50);
 
   res.send(front50);
 });
 
+// sets up ws for a game, handles connections
 rankedRouter.ws("/ws/game", (ws, req) => {
   const { user } = req;
 
@@ -73,6 +78,7 @@ rankedRouter.ws("/ws/game", (ws, req) => {
   });
 });
 
+// sets up ws for the queue, handles connections
 rankedRouter.ws("/ws/queue", (ws, req) => {
   const { user } = req;
 

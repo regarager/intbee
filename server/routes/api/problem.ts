@@ -6,6 +6,7 @@ import { approx, compute } from "@util/server";
 
 export const problemRouter = express.Router();
 
+// get info for a problem (not sure if this was ever used anywhere)
 problemRouter.get("/:id/solution", async (req, res) => {
   const id = req.params.id ?? "";
 
@@ -18,6 +19,7 @@ problemRouter.get("/:id/solution", async (req, res) => {
   }
 });
 
+// checks if answer is correct for a problem
 problemRouter.post("/:id/verify", async (req, res) => {
   log(req.body);
   const id = req.params.id ?? "";
