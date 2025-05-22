@@ -5,20 +5,24 @@ import { GamePartial, log, RANKED_MAX_ROUNDS, RANKED_TIMER } from "@util/common"
 import { Problem, User } from "./schemas";
 import { cdf } from "./statistics";
 
+// class to calculate rating changes using elo
 export class Rating {
   private rating: number;
   public static RATING_STDEV = 200;
   public static DIFFERENCE_STDEV = Rating.RATING_STDEV * Math.SQRT2;
   public static POINT_TOTAL = 40;
 
+  // sets up from perspective of one player with given rating
   constructor(rating: number) {
     this.rating = rating;
   }
 
+  // z score of difference
   z(other: number) {
     return (this.rating - other) / Rating.DIFFERENCE_STDEV;
   }
 
+  // elo change if win
   win(other: number) {
     const z = this.z(other);
     const p = cdf(z);
@@ -26,11 +30,13 @@ export class Rating {
     return Math.ceil((1 - p) * Rating.POINT_TOTAL);
   }
 
+  // elo chaneg is loss (abs)
   lose(other: number) {
     return Rating.POINT_TOTAL - this.win(other);
   }
 }
 
+// room game instance
 export class Game {
   answer: string;
   players: string[];
@@ -42,6 +48,7 @@ export class Game {
   used: string[];
   roundEndTime: number;
 
+  // initializes stuff
   constructor(players: string[], ratings: number[]) {
     this.players = players;
     this.ratings = ratings;
@@ -63,10 +70,12 @@ export class Game {
     this.startTimer();
   }
 
+  // starts timer for round
   startTimer() {
     this.roundEndTime = DateTime.now().plus({ seconds: RANKED_TIMER }).toMillis();
   }
 
+  // fetches next problem from mongo, increases round, resets timer
   async getProblem() {
     const matches = await Problem.aggregate([
       { $match: { _id: { $nin: this.used } } },
@@ -85,6 +94,7 @@ export class Game {
     this.startTimer();
   }
 
+  // calculates winner -> -2 if game not complete, -1 if tie, 0 or 1 if a player wins
   winner() {
     if (this.score[0] >= 2) {
       return 0;
@@ -98,20 +108,7 @@ export class Game {
     return -2;
   }
 
-  toPartial(player: string): GamePartial {
-    return {
-      player: this.players.indexOf(player),
-      players: this.players,
-      ratings: this.ratings,
-      ratingChanges: this.ratingChanges,
-      score: this.score,
-      round: this.round,
-      problem: this.problem,
-      winner: this.winner(),
-      roundEndTime: this.roundEndTime,
-    };
-  }
-
+  // update rating changes based on winner
   async applyRatingChanges() {
     const winner = this.winner();
 
@@ -145,5 +142,20 @@ export class Game {
     }
 
     log(`Updated ratings for players ${this.players}`);
+  }
+
+  // export game data to interface to send to client
+  toPartial(player: string): GamePartial {
+    return {
+      player: this.players.indexOf(player),
+      players: this.players,
+      ratings: this.ratings,
+      ratingChanges: this.ratingChanges,
+      score: this.score,
+      round: this.round,
+      problem: this.problem,
+      winner: this.winner(),
+      roundEndTime: this.roundEndTime,
+    };
   }
 }

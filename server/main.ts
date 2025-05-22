@@ -19,8 +19,10 @@ import { lbRouter } from "./routes/lb";
 import { rankedRouter } from "./routes/ranked";
 import { wikiRouter } from "./routes/wiki";
 
+// load .env variables
 dotenv.config();
 
+// check env variables being loaded
 if (process.env.MONGO_URL) {
   mongoose.connect(process.env.MONGO_URL).then(() => log("connected to mongoose"));
 } else {
@@ -33,12 +35,17 @@ if (!process.env.JWT_SECRET) {
   exit(1);
 }
 
+// setup express
 const app = expressWs(express()).app;
 
+// setup ejs
 app.set("views", path.join(process.cwd(), "pages"));
 app.set("view engine", "ejs");
 
+// expose rank function to ejs
 app.locals.getRank = getRank;
+
+// middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
@@ -49,6 +56,7 @@ app.use(express.static("public"));
 app.use(authMiddleware);
 app.use(loggingMiddleware);
 
+// routers
 app.use("/api/auth", authAPIRouter);
 app.use("/api/problem", problemRouter);
 

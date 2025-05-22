@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 import { TagType } from "@util/common";
 
+// user schema
 export const User = mongoose.model(
   "User",
   new Schema({
@@ -18,6 +19,7 @@ export const User = mongoose.model(
   }),
 );
 
+// problem schema
 export const Problem = mongoose.model(
   "Problem",
   new Schema({
@@ -29,6 +31,7 @@ export const Problem = mongoose.model(
   }),
 );
 
+// tag/wiki article schema
 export const Tag = mongoose.model(
   "Tag",
   new Schema({

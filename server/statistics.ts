@@ -1,5 +1,6 @@
 import { clamp } from "@util/common";
 
+// values for normalcdf
 const values = [
   2.866515718791933e-7, 4.791832765903185e-7, 7.93328151975595e-7, 1.3008074539172771e-6,
   2.1124547025028537e-6, 3.3976731247300535e-6, 5.412543907703841e-6, 8.539905470991794e-6,
@@ -27,10 +28,12 @@ const values = [
   0.9999995208167234, 0.9999997133484281,
 ];
 
+// normal cdf using above values
 export function cdf(x: number) {
   return values[clamp(Math.floor(x * 10 + 50), 0, 100)];
 }
 
+// inverse normal cdf
 export function invCdf(x: number) {
   let left = 0;
 
