@@ -14,12 +14,14 @@ function main() {
     socket.send(action(RankedAction.UPDATE, {}));
   };
 
+  // parse data
   socket.onmessage = raw => {
     const data = JSON.parse(raw.data + "");
 
     update(data.data as GamePartial);
   };
 
+  //updates game for player
   function update(game: GamePartial) {
     const { player } = game;
 
@@ -43,6 +45,7 @@ function main() {
       clearInterval(timerHandle);
     }
 
+    // progress bar animation
     timerHandle = setInterval(() => {
       const curr = DateTime.now().toMillis();
       const delta = curr - game.roundEndTime + RANKED_TIMER * 1000;
@@ -67,6 +70,7 @@ function main() {
     }
   }
 
+  // submitting answer
   function sendAnswer() {
     const input = document.getElementById("answer-input") as HTMLInputElement;
 

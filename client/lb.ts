@@ -6,8 +6,9 @@ const wsUrl = "ws://localhost:3000/lb";
 
 const socket = new WebSocket(wsUrl);
 
-const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15];
+const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15]; // scores of questions
 
+// returns score of participant
 function getScore(participant: LBParticipant) {
   let ans = 0;
 
@@ -23,6 +24,7 @@ function formatName(name: string) {
   return name;
 }
 
+// updates leaderboard
 function updateLeaderboard(data: LBParticipant[]) {
   data = data.sort((a, b) => getScore(b) - getScore(a));
 
@@ -30,7 +32,7 @@ function updateLeaderboard(data: LBParticipant[]) {
 
   let i = 0;
 
-  const top_three = ["gold", "silver", "bronze"];
+  const top_three = ["gold", "silver", "bronze"]; // colors
 
   for (const participant of data) {
     const tr = document.createElement("tr");
