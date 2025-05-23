@@ -13,6 +13,7 @@ const JWT_SECRET: string = process.env.JWT_SECRET ?? "";
 
 export const authAPIRouter = express.Router();
 
+// appends user auth object to request (req.user) if jwt finds valid cookie
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token ?? "";
 
@@ -37,6 +38,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   );
 };
 
+// allows only people who are signed in to access
 export const authOnly = (req: Request, res: Response, next: NextFunction) => {
   if (req.user) {
     next();
@@ -46,6 +48,7 @@ export const authOnly = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// (unused) restricts route to only moderator
 export const moderatorOnly = (req: Request, res: Response, next: NextFunction) => {
   if (req.user && (req.user.role === "admin" || req.user.role === "moderator")) {
     log(`${req.user.role} ${req.user.username} accessed ${req.originalUrl}`);
@@ -56,6 +59,7 @@ export const moderatorOnly = (req: Request, res: Response, next: NextFunction) =
   }
 };
 
+// restricts route to only admin access
 export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
   if (req.user && req.user.role === "admin") {
     log(`${req.user.role} ${req.user.username} accessed ${req.originalUrl}`);
@@ -66,6 +70,7 @@ export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// login user and append cookie
 authAPIRouter.post("/login", async (req, res) => {
   if (!req.body) {
     res.send(`<span style="color: red;">Failed login</span>`);
@@ -99,6 +104,7 @@ authAPIRouter.post("/login", async (req, res) => {
   }
 });
 
+// create user and append cookie
 authAPIRouter.post("/register", async (req, res) => {
   if (!req.body) {
     res.status(400).send({ message: "Authentication failure" });

@@ -2,6 +2,7 @@ import { TagType } from "@util/common";
 
 const editor = document.querySelector("#editor") as HTMLTextAreaElement;
 
+// update wiki for admin
 document.querySelector("#save-btn")!.addEventListener("click", async () => {
   let tag = editor.dataset.tag;
 

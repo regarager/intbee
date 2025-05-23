@@ -10,6 +10,7 @@ import { WSHandler } from "./wshandler";
 
 const log = WSHandler.log;
 
+// keeps track of game state
 export class RankedHandler extends WSHandler {
   public games: Map<string, Game>; // game id to game state
   public users: Map<string, string>; // username to game id
@@ -142,6 +143,7 @@ export class RankedHandler extends WSHandler {
     });
   }
 
+  // send game state to a client
   update(ws: WebSocket, player: string, game: Game) {
     ws.send(action(RankedAction.UPDATE, game.toPartial(player)));
   }

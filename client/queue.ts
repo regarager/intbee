@@ -8,6 +8,7 @@ function main() {
   const queue = document.getElementById("queue") as HTMLOListElement;
   const queuebtn = document.getElementById("queue-btn") as HTMLButtonElement;
 
+  // update queue
   async function updateQueue() {
     console.log("Updating queue...");
 
@@ -23,6 +24,7 @@ function main() {
 
         const rank = getRank(data.second);
 
+        // custom orz username color
         if (rank === "orz") {
           const first = document.createElement("span");
           first.innerText = username[0];
@@ -52,6 +54,7 @@ function main() {
     socket.send(action(QueueAction.INIT, {}));
   };
 
+  // opens room for game
   socket.onmessage = ev => {
     const data = JSON.parse(ev.data);
 

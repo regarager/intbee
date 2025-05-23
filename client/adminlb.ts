@@ -6,6 +6,7 @@ const wsUrl = "ws://localhost:3000/lb";
 const socket = new WebSocket(wsUrl);
 const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15];
 
+// get score of participant
 function getScore(participant: LBParticipant): number {
   let ans = 0;
   for (let i = 0; i < participant.attempts.length; i++) {
@@ -14,6 +15,7 @@ function getScore(participant: LBParticipant): number {
   return ans;
 }
 
+// makes buttons for admin console
 function makeButtons(participantId: number, questionIndex: number): HTMLDivElement {
   const container = document.createElement("div");
   container.className = "cell-btns";
@@ -61,6 +63,7 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
   return container;
 }
 
+// update leaderboard for admin
 function updateAdminTable(data: LBParticipant[]) {
   // data = data.sort((a, b) => getScore(b) - getScore(a));
   tbody.innerHTML = "";
@@ -119,6 +122,7 @@ socket.addEventListener("message", ev => {
 
 socket.addEventListener("close", () => console.log("Admin disconnected"));
 
+// admin action on participant
 document.getElementById("form")!.addEventListener("submit", e => {
   const nameInput = document.getElementById("name-input") as HTMLInputElement;
   const actionInput = document.getElementById("action-input") as HTMLSelectElement;

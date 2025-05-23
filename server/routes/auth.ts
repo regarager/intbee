@@ -7,8 +7,7 @@ dotenv.config();
 
 export const authRouter = express.Router();
 
-// TODO: redirect to a user page
-
+// login page
 authRouter.get("/login", (req, res) => {
   if (req.user) {
     res.redirect("/gym");
@@ -17,6 +16,7 @@ authRouter.get("/login", (req, res) => {
   }
 });
 
+// register page
 authRouter.get("/register", (req, res) => {
   if (req.user) {
     res.redirect("/gym");
@@ -25,6 +25,7 @@ authRouter.get("/register", (req, res) => {
   }
 });
 
+// log people out (clear auth cookie)
 authRouter.get("/logout", (_, res) => {
   res.clearCookie("token");
 

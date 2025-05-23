@@ -10,10 +10,12 @@ export const adminRouter = express.Router();
 
 adminRouter.use("/", adminOnly);
 
+// show all admin pages
 adminRouter.get("/", (_, res) => {
   res.render(file("pages/home_admin.ejs"));
 });
 
+// update/create new problem
 adminRouter.post("/problem/:id", async (req, res) => {
   const id = req.params.id ?? "";
 
@@ -48,11 +50,13 @@ adminRouter.post("/problem/:id", async (req, res) => {
   res.set("HX-Redirect", "/gym").send("OK");
 });
 
+// create new problem
 adminRouter.get("/problem/new", async (_, res) => {
   const problem = { latex: "", answer: "", rating: 0, tags: [], variable: "x" };
   res.render(file("pages/problem_admin.ejs"), { problem });
 });
 
+// render problem page in admin view
 adminRouter.get("/problem/:id", async (req, res) => {
   const id = req.params.id ?? "";
 
@@ -65,11 +69,13 @@ adminRouter.get("/problem/:id", async (req, res) => {
   }
 });
 
+// problem editor but for a new problem instead of existing
 adminRouter.get("/problem/new", async (_, res) => {
   const tag = { content: "Lorem ipsum", tag: "" };
   res.render(file("pages/wiki_admin.ejs"), { tag });
 });
 
+// wiki editor
 adminRouter.get("/wiki/:id", async (req, res) => {
   const id = req.params.id ?? "";
 
@@ -83,6 +89,7 @@ adminRouter.get("/wiki/:id", async (req, res) => {
   }
 });
 
+// update wiki article data
 adminRouter.post("/wiki/", async (req, res) => {
   const data = req.body as TagPartial;
 
