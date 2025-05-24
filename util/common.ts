@@ -101,6 +101,7 @@ export interface LBParticipant {
 export interface LBPartial {
   score_values: number[];
   participants: LBParticipant[];
+  size: number;
 }
 
 // contains data for tag/wiki article

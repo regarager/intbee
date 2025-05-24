@@ -1,6 +1,7 @@
 import { LBPartial, LBParticipant } from "@util/common";
 
 const tbody = document.getElementById("tbody")!;
+const { id } = (document.querySelector(".container") as HTMLDivElement).dataset!;
 
 const wsUrl = "ws://localhost:3000/lb";
 
@@ -72,8 +73,8 @@ function updateLeaderboard(data: LBParticipant[]) {
   }
 }
 
-socket.addEventListener("open", ev => {
-  socket.send(JSON.stringify({ action: "data" }));
+socket.addEventListener("open", () => {
+  socket.send(JSON.stringify({ action: "data", id }));
 });
 
 socket.addEventListener("message", ev => {
@@ -82,4 +83,4 @@ socket.addEventListener("message", ev => {
   updateLeaderboard(data.participants);
 });
 
-socket.addEventListener("close", ev => console.log("closed"));
+socket.addEventListener("close", () => console.log("closed"));

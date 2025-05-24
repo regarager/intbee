@@ -1,7 +1,7 @@
 import { WebSocket } from "ws";
 
 import { LBInstance } from "@server/lbinstance";
-import { LBPartial, LBParticipant } from "@util/common";
+import { uid } from "@util/server";
 
 import { WSHandler } from "./wshandler";
 
@@ -9,101 +9,72 @@ const log = WSHandler.log;
 
 // ws handler for leaderboard tool
 export class LBHandler extends WSHandler {
-  instance;
+  public instances: Map<string, LBInstance>;
 
   // creates new handler
-  constructor(size: number) {
+  constructor() {
     super();
-    this.instance = new LBInstance(size);
+    this.instances = new Map<string, LBInstance>();
   }
 
   // processes ws requests
-  async process(ws: WebSocket, data: any) {
+  async process(ws: WebSocket, username: string, data: any) {
     const action = data.action;
+    const instanceId = data.id;
+    const instance = this.instances.get(instanceId);
+    if (!instance) return;
+
+    this.sockets.set(username, ws);
+    instance.connections.add(ws);
 
     switch (action) {
       case "data": {
-        this.sendData(ws);
+        ws.send(JSON.stringify(instance.toPartial()));
         break;
       }
       case "correct": {
-        this.correct(data);
+        instance.correct(data.participantId, data.question);
         break;
       }
 
       case "incorrect": {
-        this.incorrect(data);
+        instance.incorrect(data.participantId, data.question);
         break;
       }
 
       case "undo": {
-        this.undo(data);
+        instance.undo(data.participantId, data.question);
         break;
       }
 
       case "user-add": {
-        this.userAdd(data);
+        instance.add(data.name);
         break;
       }
 
       case "user-remove": {
-        this.userRemove(data);
+        instance.remove(data.name);
         break;
       }
     }
+
+    this.update(instance);
   }
 
-  // send state to client
-  sendData(ws: WebSocket) {
-    ws.send(JSON.stringify(this.toPartial()));
+  createInstance(username: string, size: number) {
+    const instance = new LBInstance(size);
+    instance.admins.push(username);
+    const id = uid(8);
+    log(`Created new LB tool instance with id ${id}`);
+    this.instances.set(id, instance);
   }
 
-  // update state when answer is correct
-  correct(data: any) {
-    const { participantId, question } = data;
-    const part = this.instance.participants[participantId];
-
-    if (!part) return;
-
-    part.attempts[question] = Math.abs(part.attempts[question]) + 1;
-  }
-
-  // update state when answer is incorrect
-  incorrect(data: any) {
-    const { participantId, question } = data;
-    const part = this.instance.participants[participantId];
-
-    if (!part) return;
-
-    part.attempts[question] = -Math.abs(part.attempts[question]) - 1;
-  }
-
-  // undo last operation (marked as correct, incorrect) for a question for a user
-  undo(data: any) {
-    const { participantId, question } = data;
-    const part = this.instance.participants[participantId];
-
-    if (!part) return;
-
-    if (part.attempts[question] !== 0) {
-      part.attempts[question] =
-        Math.sign(part.attempts[question]) * (Math.abs(part.attempts[question]) - 1);
-    }
-  }
-
-  // add a user
-  userAdd(data: any) {
-    const participant: LBParticipant = {
-      id: this.instance.participants.length,
-      name: data.name,
-      attempts: new Array(this.instance.size).fill(0),
-    };
-    this.instance.participants.push(participant);
-  }
-
-  // remove a user
-  userRemove(data: any) {
-    this.instance.participants = this.instance.participants.filter(p => p.name !== data.name);
+  update(instance: LBInstance) {
+    instance.connections.forEach(ws => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(instance.toPartial()));
+      }
+    });
   }
 
   // TODO: implement
@@ -114,15 +85,5 @@ export class LBHandler extends WSHandler {
   // TODO: implement
   load() {
     log("unimplemented (load)");
-  }
-
-  // checks if username is marked as admin in the instance
-  isAdmin(username: string) {
-    return this.instance.admins.includes(username);
-  }
-
-  // returns data as LBPartial
-  toPartial(): LBPartial {
-    return { score_values: this.instance.score_values, participants: this.instance.participants };
   }
 }
