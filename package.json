@@ -5,7 +5,7 @@
   "main": "server/main.ts",
   "scripts": {
     "format": "prettier --write .",
-    "lint": "eslint .",
+    "check": "eslint . && tsc --noEmit",
     "dev": "npm-run-all --parallel watch:server watch:client",
     "watch:server": "tsx watch server/main.ts",
     "watch:client": "webpack --watch",

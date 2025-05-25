@@ -5,10 +5,9 @@ const wsUrl = "ws://localhost:3000/lb";
 const { id } = (document.querySelector(".container") as HTMLDivElement).dataset!;
 
 const socket = new WebSocket(wsUrl);
-const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15];
 
 // get score of participant
-function getScore(participant: LBParticipant): number {
+function getScore(score: number[], participant: LBParticipant): number {
   let ans = 0;
   for (let i = 0; i < participant.attempts.length; i++) {
     ans += participant.attempts[i] > 0 ? score[i] : 0;
@@ -68,11 +67,11 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
 }
 
 // update leaderboard for admin
-function updateAdminTable(data: LBParticipant[]) {
+function updateAdminTable(data: LBPartial) {
   // data = data.sort((a, b) => getScore(b) - getScore(a));
   tbody.innerHTML = "";
 
-  for (const participant of data) {
+  for (const participant of data.participants) {
     const tr = document.createElement("tr");
 
     const idCell = document.createElement("td");
@@ -86,7 +85,7 @@ function updateAdminTable(data: LBParticipant[]) {
     tr.appendChild(nameCell);
 
     const ptsCell = document.createElement("td");
-    ptsCell.textContent = getScore(participant).toString();
+    ptsCell.textContent = getScore(data.score_values, participant).toString();
     tr.appendChild(ptsCell);
 
     const subCell = document.createElement("td");
@@ -121,7 +120,7 @@ socket.addEventListener("message", ev => {
   console.log("updated");
   const content = ev.data + "";
   const data = JSON.parse(content) as LBPartial;
-  updateAdminTable(data.participants);
+  updateAdminTable(data);
 });
 
 socket.addEventListener("close", () => console.log("Admin disconnected"));

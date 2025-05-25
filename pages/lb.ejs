@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>Integration Bee Scoreboard</title>
@@ -7,22 +6,16 @@
     <link rel="stylesheet" type="text/css" href="/lb.css" />
   </head>
   <%- include("../components/header.ejs") %>
-  <div class="container" data-id="<%= id %>">
-    <table>
-      <thead>
-        <tr>
-          <td>ID</td>
-          <td>Name</td>
-          <% for (let i = 0; i < instance.size; i++) { %>
-          <td class="problem"><%= i + 1 %></td>
-          <% } %>
-          <td class="problem">Score</td>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr></tr>
-      </tbody>
-    </table>
+  <div class="container">
+    <h1>Leaderboard Tool Setup</h1>
+    <form hx-post="/lb/new" hx-indicator="#submit-btn">
+      <label for="size">Number of questions:</label>
+      <input name="size" type="number" />
+      <label for="size">Score values (separate by commas, ex: 1, 1, 2, 2):</label>
+      <input name="score_values" />
+      <label for="admins">Admin usernames (able to enter data; separate entries by commas):</label>
+      <input name="admins" />
+      <button type="submit">Create</button>
+    </form>
   </div>
-  <script src="/lb-bundle.js"></script>
 </html>

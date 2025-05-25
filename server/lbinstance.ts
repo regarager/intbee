@@ -11,10 +11,10 @@ export class LBInstance {
   size: number;
 
   // size is how many questions
-  constructor(size: number) {
+  constructor(size: number, score_values: number[], admins: string[]) {
     this.connections = new Set<WebSocket>();
-    this.admins = [];
-    this.score_values = Array(size).fill(0);
+    this.admins = admins;
+    this.score_values = score_values;
     this.participants = [];
     this.size = size;
   }

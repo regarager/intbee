@@ -61,12 +61,21 @@ export class LBHandler extends WSHandler {
     this.update(instance);
   }
 
-  createInstance(username: string, size: number) {
-    const instance = new LBInstance(size);
-    instance.admins.push(username);
+  createInstance({
+    size,
+    score_values,
+    admins,
+  }: {
+    size: number;
+    score_values: number[];
+    admins: string[];
+  }): [string, LBInstance] {
+    const instance = new LBInstance(size, score_values, admins);
     const id = uid(8);
     log(`Created new LB tool instance with id ${id}`);
     this.instances.set(id, instance);
+
+    return [id, instance];
   }
 
   update(instance: LBInstance) {

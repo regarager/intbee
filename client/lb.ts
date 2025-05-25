@@ -7,10 +7,8 @@ const wsUrl = "ws://localhost:3000/lb";
 
 const socket = new WebSocket(wsUrl);
 
-const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15]; // scores of questions
-
 // returns score of participant
-function getScore(participant: LBParticipant) {
+function getScore(score: number[], participant: LBParticipant) {
   let ans = 0;
 
   for (let i = 0; i < participant.attempts.length; i++) {
@@ -26,8 +24,12 @@ function formatName(name: string) {
 }
 
 // updates leaderboard
-function updateLeaderboard(data: LBParticipant[]) {
-  data = data.sort((a, b) => getScore(b) - getScore(a));
+function updateLeaderboard(data: LBPartial) {
+  const { score_values } = data;
+
+  const sorted_participants = data.participants.sort(
+    (a, b) => getScore(score_values, b) - getScore(score_values, a),
+  );
 
   tbody.innerHTML = "";
 
@@ -35,7 +37,7 @@ function updateLeaderboard(data: LBParticipant[]) {
 
   const top_three = ["gold", "silver", "bronze"]; // colors
 
-  for (const participant of data) {
+  for (const participant of sorted_participants) {
     const tr = document.createElement("tr");
     const id = document.createElement("td");
     const name = document.createElement("td");
@@ -46,6 +48,12 @@ function updateLeaderboard(data: LBParticipant[]) {
 
     tr.append(id);
     tr.appendChild(name);
+
+    const pts = document.createElement("td");
+    pts.innerText = getScore(score_values, participant).toString();
+    pts.style.color = "green";
+
+    tr.appendChild(pts);
 
     participant.attempts.forEach(x => {
       const problem = document.createElement("td");
@@ -62,12 +70,6 @@ function updateLeaderboard(data: LBParticipant[]) {
       tr.appendChild(problem);
     });
 
-    const pts = document.createElement("td");
-    pts.innerText = getScore(participant).toString();
-    pts.style.color = "green";
-
-    tr.appendChild(pts);
-
     tbody.appendChild(tr);
     i++;
   }
@@ -80,7 +82,7 @@ socket.addEventListener("open", () => {
 socket.addEventListener("message", ev => {
   const content = ev.data + "";
   const data = JSON.parse(content) as LBPartial;
-  updateLeaderboard(data.participants);
+  updateLeaderboard(data);
 });
 
 socket.addEventListener("close", () => console.log("closed"));
