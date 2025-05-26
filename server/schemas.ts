@@ -40,5 +40,6 @@ export const Tag = mongoose.model(
       type: String,
       enum: Object.values(TagType),
     },
+    display: String, // properly formatted version of tag name
   }),
 );
