@@ -8,9 +8,6 @@ export const wikiRouter = express.Router();
 
 let tags: string[];
 
-// cached markdown for each page (not really necessary but possibly for scaling)
-const compiledMD = new Map<string, string>();
-
 // list all articles
 async function loadArticles() {
   const all = await Tag.find({});
@@ -36,16 +33,8 @@ wikiRouter.get("/:tag", async (req, res) => {
     return;
   }
 
-  let output: string;
-  if (!compiledMD.has(tag)) {
-    output = await marked(tagContent.content ?? "");
-    compiledMD.set(tag, output);
-  } else {
-    output = compiledMD.get(tag)!;
-    const content = tagContent.content ?? "";
-    marked(content.replace(/\\/g, "\\\\"), { async: true }).then(res => compiledMD.set(tag, res));
-  }
-
+  const content = tagContent.content ?? "";
+  const output = marked(content.replace(/\\/g, "\\\\"), { async: false });
   res.render(file("/pages/wiki_page.ejs"), { content: output, tag: tagContent.tag });
 });
 

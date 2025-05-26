@@ -43,6 +43,7 @@ export enum QueueAction {
 // tag enum, also used for articles in wiki
 export enum TagType {
   BETA = "beta",
+  CONTOUR = "contour",
   FEYNMAN = "feynman",
   GAMMA = "gamma",
   GEOMETRY = "geometry",

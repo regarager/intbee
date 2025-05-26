@@ -24,7 +24,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
     const raw = String.raw`<%- content %>`;
-    document.getElementById("editor").value;
+    document.getElementById("editor").value = raw;
     document.getElementById("output").innerHTML = marked.parse(raw);
 
     document.getElementById("editor").addEventListener("input", e => {
