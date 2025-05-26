@@ -1,3 +1,6 @@
+/**
+* the page is intended to be exclusively projected on a landscape screen, so we did not include any responsive layout
+*/
 table {
   font-size: 16px;
   border: 2px solid black;

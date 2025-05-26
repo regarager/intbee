@@ -18,6 +18,8 @@ function main() {
   socket.onmessage = raw => {
     const data = JSON.parse(raw.data + "");
 
+    log(data);
+
     update(data.data as GamePartial);
   };
 
