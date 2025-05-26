@@ -99,11 +99,7 @@ export class RankedHandler extends WSHandler {
 
     this.games.set(gameId, game);
 
-    // figure out a better way to let ws connect
-    setTimeout(async () => {
-      log("sigma");
-      await this.nextProblem(gameId, game);
-    }, 1000);
+    this.nextProblem(gameId, game);
 
     return [gameId, game];
   }
@@ -113,7 +109,7 @@ export class RankedHandler extends WSHandler {
     if (game.round >= RANKED_MAX_ROUNDS) return;
 
     await game.getProblem();
-    this.updatePlayers(game);
+
     this.timers.set(
       gameId,
       setTimeout(async () => {
