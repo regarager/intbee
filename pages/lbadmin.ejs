@@ -3,10 +3,10 @@
     <meta charset="utf-8" />
     <title>Integration Bee Scoreboard</title>
     <%- include("../components/styles") %>
-    <link rel="stylesheet" type="text/css" href="/lb.css" />
+    <link rel="stylesheet" type="text/css" href="/lbinstance.css" />
   </head>
   <%- include("../components/header.ejs") %>
-  <div class="container">
+  <div class="container" data-id="<%= id %>">
     <h2>User Editor</h2>
     <form id="form">
       <label for="name-input">Name: </label>
@@ -29,23 +29,9 @@
           <td>Name</td>
           <td class="problem">Score</td>
           <td class="problem">Submissions</td>
-          <td class="problem">1</td>
-          <td class="problem">2</td>
-          <td class="problem">3</td>
-          <td class="problem">4</td>
-          <td class="problem">5</td>
-          <td class="problem">6</td>
-          <td class="problem">7</td>
-          <td class="problem">8</td>
-          <td class="problem">9</td>
-          <td class="problem">10</td>
-          <td class="problem">11</td>
-          <td class="problem">12</td>
-          <td class="problem">13</td>
-          <td class="problem">14</td>
-          <td class="problem">15</td>
-          <td class="problem">16</td>
-          <td class="problem">17</td>
+          <% for (let i = 0; i < instance.size; i++) { %>
+          <td class="problem"><%= i + 1 %></td>
+          <% } %>
         </tr>
       </thead>
       <tbody id="tbody">

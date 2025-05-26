@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Integration Bee Scoreboard</title>
+    <%- include("../components/styles") %>
+    <link rel="stylesheet" type="text/css" href="/lbinstance.css" />
+  </head>
+  <%- include("../components/header.ejs") %>
+  <div class="container" data-id="<%= id %>">
+    <table>
+      <thead>
+        <tr>
+          <td>ID</td>
+          <td>Name</td>
+          <td class="problem">Score</td>
+          <% for (let i = 0; i < instance.size; i++) { %>
+          <td class="problem"><%= i + 1 %></td>
+          <% } %>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr></tr>
+      </tbody>
+    </table>
+  </div>
+  <script src="/lb-bundle.js"></script>
+</html>

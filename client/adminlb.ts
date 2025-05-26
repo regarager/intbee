@@ -2,12 +2,12 @@ import { LBPartial, LBParticipant } from "@util/common";
 
 const tbody = document.getElementById("tbody")!;
 const wsUrl = "ws://localhost:3000/lb";
+const { id } = (document.querySelector(".container") as HTMLDivElement).dataset!;
 
 const socket = new WebSocket(wsUrl);
-const score = [5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 15, 15];
 
 // get score of participant
-function getScore(participant: LBParticipant): number {
+function getScore(score: number[], participant: LBParticipant): number {
   let ans = 0;
   for (let i = 0; i < participant.attempts.length; i++) {
     ans += participant.attempts[i] > 0 ? score[i] : 0;
@@ -28,6 +28,7 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
         action: "correct",
         participantId,
         question: questionIndex,
+        id,
       }),
     );
   };
@@ -40,6 +41,7 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
         action: "incorrect",
         participantId,
         question: questionIndex,
+        id,
       }),
     );
   };
@@ -52,6 +54,7 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
         action: "undo",
         participantId,
         question: questionIndex,
+        id,
       }),
     );
   };
@@ -64,11 +67,11 @@ function makeButtons(participantId: number, questionIndex: number): HTMLDivEleme
 }
 
 // update leaderboard for admin
-function updateAdminTable(data: LBParticipant[]) {
+function updateAdminTable(data: LBPartial) {
   // data = data.sort((a, b) => getScore(b) - getScore(a));
   tbody.innerHTML = "";
 
-  for (const participant of data) {
+  for (const participant of data.participants) {
     const tr = document.createElement("tr");
 
     const idCell = document.createElement("td");
@@ -82,7 +85,7 @@ function updateAdminTable(data: LBParticipant[]) {
     tr.appendChild(nameCell);
 
     const ptsCell = document.createElement("td");
-    ptsCell.textContent = getScore(participant).toString();
+    ptsCell.textContent = getScore(data.score_values, participant).toString();
     tr.appendChild(ptsCell);
 
     const subCell = document.createElement("td");
@@ -110,14 +113,14 @@ function updateAdminTable(data: LBParticipant[]) {
 // WebSocket event handlers
 socket.addEventListener("open", () => {
   console.log("Admin connected");
-  socket.send(JSON.stringify({ action: "data" }));
+  socket.send(JSON.stringify({ action: "data", id }));
 });
 
 socket.addEventListener("message", ev => {
   console.log("updated");
   const content = ev.data + "";
   const data = JSON.parse(content) as LBPartial;
-  updateAdminTable(data.participants);
+  updateAdminTable(data);
 });
 
 socket.addEventListener("close", () => console.log("Admin disconnected"));
@@ -130,7 +133,7 @@ document.getElementById("form")!.addEventListener("submit", e => {
   e.preventDefault();
 
   const action = actionInput.value;
-  const obj: any = { action: `user-${action}` };
+  const obj: any = { action: `user-${action}`, id };
 
   if (action === "add") {
     obj.name = nameInput.value;
@@ -142,9 +145,9 @@ document.getElementById("form")!.addEventListener("submit", e => {
 });
 
 document.getElementById("save")!.addEventListener("click", () => {
-  socket.send(JSON.stringify({ action: "save" }));
+  socket.send(JSON.stringify({ action: "save", id }));
 });
 
 document.getElementById("load")!.addEventListener("click", () => {
-  socket.send(JSON.stringify({ action: "load" }));
+  socket.send(JSON.stringify({ action: "load", id }));
 });
