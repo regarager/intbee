@@ -12,7 +12,7 @@
     <ul>
       <% for (const tag of tags) { %>
       <li>
-        <a href="/wiki/<%= tag %>"><%= tag %></a>
+        <a href="/wiki/<%= tag.first %>"><%= tag.second %></a>
       </li>
       <% } %>
     </ul>

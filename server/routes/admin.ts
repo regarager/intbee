@@ -85,7 +85,7 @@ adminRouter.get("/wiki/:id", async (req, res) => {
     res.redirect("/error");
   } else {
     const content = tag.content!.replace(/\\/g, "\\\\");
-    res.render(file("pages/wiki_admin.ejs"), { tag: tag.tag, content });
+    res.render(file("pages/wiki_admin.ejs"), { tag: tag.tag, content, display: tag.display! });
   }
 });
 

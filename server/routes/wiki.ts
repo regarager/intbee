@@ -3,16 +3,17 @@ import { marked } from "marked";
 
 import { Tag } from "@server/schemas";
 import { file } from "@util/server";
+import { make_pair, Pair } from "@util/structs";
 
 export const wikiRouter = express.Router();
 
-let tags: string[];
+let tags: Pair<string, string>[];
 
 // list all articles
 async function loadArticles() {
   const all = await Tag.find({});
 
-  tags = all.map(doc => doc.tag!);
+  tags = all.map(doc => make_pair(doc.tag!, doc.display!));
 }
 
 loadArticles();
@@ -35,19 +36,9 @@ wikiRouter.get("/:tag", async (req, res) => {
 
   const content = tagContent.content ?? "";
   const output = marked(content.replace(/\\/g, "\\\\"), { async: false });
-  res.render(file("/pages/wiki_page.ejs"), { content: output, tag: tagContent.tag });
-});
-
-// not sure what this does
-// TODO: remove route
-wikiRouter.get("/problem/:id", async (req, res) => {
-  const id = req.params.id ?? "";
-
-  const tag = await Tag.findById(id);
-
-  if (tag == null) {
-    res.redirect("/error");
-  } else {
-    res.render(file("/pages/problem.ejs"), { tag });
-  }
+  res.render(file("/pages/wiki_page.ejs"), {
+    content: output,
+    tag: tagContent.tag,
+    display: tagContent.display,
+  });
 });

@@ -8,7 +8,7 @@
   </head>
   <%- include("../components/header.ejs") %>
   <div class="container">
-    <h1>Wiki - <%= tag %></h1>
+    <h1>Wiki - <%= display %></h1>
     <% if (user && user.role === "admin") { %>
     <a href="/admin/wiki/<%= tag %>">Edit</a>
     <% } %> <%- content %>
