@@ -52,7 +52,7 @@ export class LBInstance {
   // adds a participant
   add(name: string) {
     this.participants.push({
-      id: this.participants.length,
+      pid: this.participants.length,
       name: name,
       attempts: new Array(this.size).fill(0),
     });

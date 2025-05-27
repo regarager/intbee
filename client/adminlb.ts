@@ -75,7 +75,7 @@ function updateAdminTable(data: LBPartial) {
     const tr = document.createElement("tr");
 
     const idCell = document.createElement("td");
-    idCell.textContent = participant.id.toString();
+    idCell.textContent = participant.pid.toString();
     tr.appendChild(idCell);
 
     const nameCell = document.createElement("td");
@@ -102,7 +102,7 @@ function updateAdminTable(data: LBPartial) {
       attemptDisplay.textContent = Math.abs(attempt).toString();
       problemCell.appendChild(attemptDisplay);
 
-      problemCell.appendChild(makeButtons(participant.id, index));
+      problemCell.appendChild(makeButtons(participant.pid, index));
       tr.appendChild(problemCell);
     });
 
@@ -142,12 +142,4 @@ document.getElementById("form")!.addEventListener("submit", e => {
   }
 
   socket.send(JSON.stringify(obj));
-});
-
-document.getElementById("save")!.addEventListener("click", () => {
-  socket.send(JSON.stringify({ action: "save", id }));
-});
-
-document.getElementById("load")!.addEventListener("click", () => {
-  socket.send(JSON.stringify({ action: "load", id }));
 });

@@ -2,6 +2,7 @@ import { log } from "console";
 import express from "express";
 import expressWs from "express-ws";
 
+import { LBTool } from "@server/schemas";
 import { LBHandler } from "@server/ws/lbhandler";
 import { jsonParse } from "@util/common";
 import { file } from "@util/server";
@@ -63,7 +64,7 @@ lbRouter.get("/", (_, res) => {
   res.render(file("pages/lb.ejs"));
 });
 
-lbRouter.post("/new", (req, res) => {
+lbRouter.post("/new", async (req, res) => {
   const data = process(req.body);
 
   log(req.body);
@@ -74,8 +75,23 @@ lbRouter.post("/new", (req, res) => {
 
   data.admins = [...new Set(data.admins).add(req.user!.username)];
 
-  const [id, instance] = handler.createInstance(data);
-  instance.admins = data.admins;
+  const doc = new LBTool({
+    score_values: data.score_values,
+    participants: [],
+    admins: data.admins,
+    size: data.size,
+  });
+
+  const id = doc.id!;
+
+  handler.createInstance({
+    id,
+    size: data.size,
+    score_values: data.score_values,
+    admins: data.admins,
+  });
+
+  await doc.save();
 
   res.set("HX-Redirect", `/lb/${id}/admin`).send("OK");
 });
@@ -90,23 +106,76 @@ lbRouter.ws("/", (ws, req) => {
 });
 
 // client-facing page, does not show any admin tools
-lbRouter.get("/:id", (req, res) => {
+lbRouter.get("/:id", async (req, res) => {
   const id = req.params.id;
+  const doc = await LBTool.findById(id);
+
+  if (doc && !handler.instances.has(id)) {
+    await handler.loadFromDB(id);
+  }
+
   if (!handler.instances.has(id)) {
     res.redirect("/error");
     return;
   }
+
+  if (!handler.instances.has(id)) {
+    await handler.loadFromDB(id);
+  }
+
   const instance = handler.instances.get(id)!;
   res.render(file("pages/lbinstance.ejs"), { id: id, instance });
 });
 
 // admin-facing page, has admin options to edit user info
-lbRouter.get("/:id/admin", (req, res) => {
+lbRouter.get("/:id/admin", async (req, res) => {
   const id = req.params.id;
+  const doc = await LBTool.findById(id);
+
+  if (doc && !handler.instances.has(id)) {
+    await handler.loadFromDB(id);
+  }
+
   const instance = handler.instances.get(id);
+
   if (!instance || !instance.admins.includes(req.user!.username)) {
     res.redirect("/error");
     return;
   }
   res.render(file("pages/lbadmin.ejs"), { id: id, instance });
+});
+
+// get download as JSON
+lbRouter.get("/:id/download", (req, res) => {
+  const id = req.params.id;
+  const instance = handler.instances.get(id);
+
+  if (!instance || !instance.admins.includes(req.user!.username)) {
+    res.redirect("/error");
+    return;
+  }
+
+  res.setHeader("Content-disposition", `attachment; filename=${id}.json`);
+  res.setHeader("Content-type", "application/json");
+  res.send(JSON.stringify(instance.toPartial()));
+});
+
+// save to database
+lbRouter.post("/:id/admin/save", async (req, res) => {
+  const id = req.params.id;
+  const instance = handler.instances.get(id);
+  const doc = await LBTool.findById(id);
+
+  if (!instance || !instance.admins.includes(req.user!.username) || !doc) {
+    res.status(400);
+    return;
+  }
+
+  await doc.updateOne({
+    participants: instance.participants.map(p => {
+      return { ...p };
+    }),
+  });
+
+  res.send(`<p style="color: green">Success!</p>`);
 });
