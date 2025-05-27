@@ -43,3 +43,20 @@ export const Tag = mongoose.model(
     display: String, // properly formatted version of tag name
   }),
 );
+
+// leaderboard tool schema
+export const LBTool = mongoose.model(
+  "LBTool",
+  new Schema({
+    score_values: [Number],
+    participants: [
+      {
+        pid: Number,
+        name: String,
+        attempts: [Number],
+      },
+    ],
+    admins: [String],
+    size: Number,
+  }),
+);

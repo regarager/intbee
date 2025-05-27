@@ -1,7 +1,8 @@
 import { WebSocket } from "ws";
 
 import { LBInstance } from "@server/lbinstance";
-import { uid } from "@util/server";
+import { LBTool } from "@server/schemas";
+import { LBParticipant } from "@util/common";
 
 import { WSHandler } from "./wshandler";
 
@@ -62,20 +63,21 @@ export class LBHandler extends WSHandler {
   }
 
   createInstance({
+    id,
     size,
     score_values,
     admins,
   }: {
+    id: string;
     size: number;
     score_values: number[];
     admins: string[];
-  }): [string, LBInstance] {
+  }): LBInstance {
     const instance = new LBInstance(size, score_values, admins);
-    const id = uid(8);
     log(`Created new LB tool instance with id ${id}`);
     this.instances.set(id, instance);
 
-    return [id, instance];
+    return instance;
   }
 
   update(instance: LBInstance) {
@@ -86,13 +88,15 @@ export class LBHandler extends WSHandler {
     });
   }
 
-  // TODO: implement
-  save() {
-    log("unimplemented (save)");
-  }
+  async loadFromDB(id: string) {
+    const doc = await LBTool.findById(id);
 
-  // TODO: implement
-  load() {
-    log("unimplemented (load)");
+    if (!doc) return;
+
+    const instance = new LBInstance(doc.size!, doc.score_values!, doc.admins!);
+
+    instance.participants = doc.participants as LBParticipant[];
+
+    this.instances.set(id, instance);
   }
 }

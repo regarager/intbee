@@ -41,7 +41,7 @@ function updateLeaderboard(data: LBPartial) {
     const tr = document.createElement("tr");
     const id = document.createElement("td");
     const name = document.createElement("td");
-    id.innerText = participant.id.toString();
+    id.innerText = participant.pid.toString();
     name.innerText = formatName(participant.name);
 
     if (i < 3) name.classList.add(top_three[i]);

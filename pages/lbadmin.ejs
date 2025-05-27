@@ -19,8 +19,20 @@
       <button type="submit">Submit</button>
     </form>
 
-    <button id="save">Save</button>
-    <button id="load">Load</button>
+    <button
+      id="save"
+      hx-post="/lb/<%= id %>/admin/save"
+      hx-target="#save-response"
+      hx-swap="innerHTML"
+    >
+      Save
+    </button>
+    <button>
+      <a style="color: inherit; font-weight: inherit" href="/lb/<%= id %>/download" target="_blank"
+        >Export</a
+      >
+    </button>
+    <span id="save-response"></span>
 
     <table>
       <thead>
@@ -34,9 +46,7 @@
           <% } %>
         </tr>
       </thead>
-      <tbody id="tbody">
-        <tr></tr>
-      </tbody>
+      <tbody id="tbody"></tbody>
     </table>
   </div>
   <script src="/lb_admin-bundle.js"></script>

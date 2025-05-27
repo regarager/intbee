@@ -93,7 +93,7 @@ export interface ProblemPartial {
 
 // contains participant info for leaderboard tool
 export interface LBParticipant {
-  id: number;
+  pid: number;
   name: string;
   attempts: number[];
 }
